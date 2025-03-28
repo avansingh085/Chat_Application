@@ -1,0 +1,33 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 100 100"
+  width="200"
+  height="200"
+>
+  <!-- Outer Circle (Symbolizing connectivity) -->
+  <circle cx="50" cy="50" r="45" fill="#e0f7fa" />
+
+  <!-- Speech Bubble -->
+  <path
+    d="M25 35 h30 a5 5 0 0 1 5 5 v15 a5 5 0 0 1 -5 5 h-20 l-10 10 v-10 h-5 a5 5 0 0 1 -5 -5 v-15 a5 5 0 0 1 5 -5 z"
+    fill="#4caf50"
+  />
+
+  <!-- Smartphone Outline -->
+  <rect
+    x="55"
+    y="25"
+    width="25"
+    height="50"
+    rx="5"
+    ry="5"
+    fill="none"
+    stroke="#2196f3"
+    stroke-width="2"
+  />
+  <!-- Smartphone Screen -->
+  <rect x="58" y="28" width="19" height="44" fill="#bbdefb" />
+
+  <!-- Small Inner Circle -->
+  <circle cx="50" cy="50" r="5" fill="#2196f3" />
+</svg>
