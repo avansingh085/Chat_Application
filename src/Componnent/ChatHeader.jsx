@@ -1,8 +1,34 @@
-import React from 'react';
+import React, {useState,useEffect} from 'react';
 import { useSelector } from 'react-redux';
+import Profile from './Profile';
 function ChatHeader() {
-  const {ConversationId,Chat}=useSelector((state)=>state.Chat)
+  const {ConversationId,Chat,ContactData,User}=useSelector((state)=>state.Chat)
+  const [showProfile,setShowProfile]=useState(false);
+  const [contactUserId,setContactUserId]=useState("");
   console.log(ConversationId,Chat)
+  const handleShowProfile=()=>{
+
+  }
+  console.log(contactUserId,"AVANNA<")
+   useEffect(()=>{
+          if(!Chat)
+              return;
+          let userId=User?.userId;
+          console.log(Chat)
+          if(Chat[ConversationId]?.Conversation?.type!=="group")
+          {
+            console.log(Chat[ConversationId]?.Conversation?.participants,"pppppppppppppp")
+              if(Chat[ConversationId]?.Conversation?.participants[1]===userId)
+              {
+                  setContactUserId(Chat[ConversationId]?.Conversation?.participants[0])
+              }
+              else
+              {
+                  setContactUserId(Chat[ConversationId]?.Conversation?.participants[1])
+              }
+          }
+          console.log(userId)
+       },[Chat,ConversationId])
     return (
         <div className="h-20 w-full border-y-2 bg-white flex items-center justify-between px-4 shadow-sm">
             {/* Left Section: User Info */}
@@ -11,11 +37,15 @@ function ChatHeader() {
                     className="h-14 w-14 rounded-full border-2 border-gray-300"
                     src="https://randomuser.me/api/portraits/men/32.jpg"
                     alt="User Avatar"
+                    onClick={()=>{setShowProfile(!showProfile)}}
                 />
+                {
+                  showProfile&&<Profile onClose={()=>{setShowProfile(false)}} isOpen={showProfile} group={Chat[ConversationId]?.group} profileUser={ContactData[contactUserId]} />
+                }
                 <div className="flex flex-col">
                   {
                     Chat[ConversationId]?.Conversation?.type==="group" ?  <span className="text-xl font-semibold text-gray-800">{Chat[ConversationId]?.group?.groupName}</span>:
-                    <span className="text-xl font-semibold text-gray-800">{Chat[ConversationId]?.Conversation?.participants[1]}</span>
+                    <span className="text-xl font-semibold text-gray-800">{contactUserId}</span>
                   }
                     
                 </div>

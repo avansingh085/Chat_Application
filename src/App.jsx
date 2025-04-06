@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Login from './Componnent/Login.jsx';
 import { apiGet, apiPost } from './utils/apiClient.js';
 import { useNavigate } from 'react-router-dom';
-import { setChat, setUser } from './Redux/globalSlice.jsx';
+import { setChat, setUser,setContactData } from './Redux/globalSlice.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -24,6 +24,7 @@ function App() {
           console.log(data);
           dispatch(setChat(data.Chat));
           dispatch(setUser(data.User));
+          dispatch(setContactData(data.ContactData));
           navigate('/chat');
           setRender(true);
         } else {

@@ -7,7 +7,9 @@ const initialState = {
     CurrChat:{},
     Chat:{},
    ConversationId:null,
-    Contacts:{}
+    Contacts:{},
+    ContactData:{},
+
 };
 const itemsSlice = createSlice({
   
@@ -31,11 +33,16 @@ const itemsSlice = createSlice({
             setConversationId:(state,action)=>{
                 state.ConversationId=action.payload;
             }
+            ,
+          
+            setContactData:(state,action)=>{
+               state.ContactData=action.payload;
+            }
            
     },
 
 });
 
-export const { setUser,setCurrChat,setChat,setConversationId } = itemsSlice.actions;
+export const { setUser,setCurrChat,setChat,setConversationId,setContactData } = itemsSlice.actions;
 
 export default itemsSlice.reducer;
