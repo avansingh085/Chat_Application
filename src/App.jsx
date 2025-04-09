@@ -8,13 +8,36 @@ import Login from './Componnent/Login.jsx';
 import { apiGet, apiPost } from './utils/apiClient.js';
 import { useNavigate } from 'react-router-dom';
 import { setChat, setUser,setContactData } from './Redux/globalSlice.jsx';
+import io from "socket.io-client";
 
 function App() {
+
+  
+  const [socket,setSocket] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [render, setRender] = useState(false);
   const isLogin = useSelector((state) => state.Chat?.isLogin);
 
+  const { User } = useSelector((state) => state.Chat);
+  useEffect(() => {
+    if(socket||!User?.userId) return;
+    const s= io("http://localhost:3001", {
+      transports: ["websocket"],
+      query: { userId: User?.userId },});
+      s.on("connect", () => {
+        console.log("Connected to socket:", s.id);
+      })
+      setSocket(s);
+      return () => {
+        s.off("connect");
+        s.off("message");
+        s.off("connect_error");
+        s.off("notification");
+        s.disconnect();
+      }
+  }, [User]);
+  console.log(socket,"OPPPPPPPPPPPPPPPPPP")
   useEffect(() => {
     async function verifyToken() {
       try {
@@ -42,8 +65,9 @@ function App() {
 
   return (
     <div className="h-screen w-screen flex justify-center items-center flex-col">
+     
       {/* {render ? (isLogin ? <Componnnent /> : <Login />) : <div className="h-screen w-screen flex justify-center items-center text-2xl">Loading...</div>} */}
-      <Componnnent />
+     <Componnnent  socket={socket}/>
     </div>
   );
 }

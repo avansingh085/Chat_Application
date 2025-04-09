@@ -12,6 +12,7 @@ function ChatRender() {
                 behavior: 'smooth', 
             });
         }
+      
     }, [Chat[ConversationId]?.Message]); 
     
 

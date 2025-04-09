@@ -1,54 +1,46 @@
 import { useRef, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import io from "socket.io-client";
+
 import { setChat } from "../Redux/globalSlice";
 
-function ChatSend() {
+function ChatSend({socket}) {
     const [message, setMessage] = useState("");
-    const [socket, setSocket] = useState(null);
     const { User, Chat, ConversationId } = useSelector((state) => state.Chat);
     const dispatch = useDispatch();
     const textareaRef = useRef(null);
-
+  
     useEffect(() => {
-        if (!User?.userId) return;
-
-        const s = io("http://localhost:3001", {
-            query: { userId: User.userId },
-            transports: ["websocket"],
-        });
-
-        s.on("connect", () => {
-            console.log("Connected to socket:", s.id);
-        });
-
-        s.on("message", (mes) => {
+        if (!socket) return;
+    
+        const handleMessage = (mes) => {
             console.log("New message received:", mes);
-            const updatedChat = [...(Chat[ConversationId]?.Message || []), mes];
+            const updatedChat = [...(Chat[mes.conversationId]?.Message || []), mes];
+    
             dispatch(
                 setChat({
                     ...Chat,
-                    [ConversationId]: {
-                        ...Chat[ConversationId],
+                    [mes.conversationId]: {
+                        ...Chat[mes.conversationId],
                         Message: updatedChat,
                     },
                 })
             );
-        });
-
-        s.on("connect_error", (err) => {
-            console.error("Socket connection error:", err);
-        });
-
-        setSocket(s);
-
-        return () => {
-            s.off("connect");
-            s.off("message");
-            s.off("connect_error");
-            s.disconnect();
         };
-    }, [User?.userId]); 
+    
+        const handleConnectError = (err) => {
+            console.error("Socket connection error:", err);
+        };
+    
+        socket.on("message", handleMessage);
+        socket.on("connect_error", handleConnectError);
+    
+        return () => {
+            socket.off("message", handleMessage);
+            socket.off("connect_error", handleConnectError);
+        };
+    
+    }, [socket, Chat, ConversationId, dispatch]);
+    
     useEffect(() => {
         const textarea = textareaRef.current;
         if (textarea) {

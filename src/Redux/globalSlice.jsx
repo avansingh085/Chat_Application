@@ -9,6 +9,7 @@ const initialState = {
    ConversationId:null,
     Contacts:{},
     ContactData:{},
+    Notifications:{},
 
 };
 const itemsSlice = createSlice({
@@ -37,12 +38,15 @@ const itemsSlice = createSlice({
           
             setContactData:(state,action)=>{
                state.ContactData=action.payload;
-            }
+            },
+            setNotifications:(state,action)=>{
+                state.Notifications=action.payload;
+            },
            
     },
 
 });
 
-export const { setUser,setCurrChat,setChat,setConversationId,setContactData } = itemsSlice.actions;
+export const { setUser,setCurrChat,setChat,setConversationId,setContactData,setNotifications } = itemsSlice.actions;
 
 export default itemsSlice.reducer;
