@@ -1,21 +1,61 @@
 import { useRef, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
+import apiClient from "../utils/apiClient";
 import { setChat } from "../Redux/globalSlice";
 
-function ChatSend({socket}) {
+function ChatSend({ socket }) {
     const [message, setMessage] = useState("");
+    const [uploadImageUrl, setUploadImageUrl] = useState(null);
     const { User, Chat, ConversationId } = useSelector((state) => state.Chat);
     const dispatch = useDispatch();
+
+    const [error, setError] = useState(null);
     const textareaRef = useRef(null);
-  
+    //image upload
+    console.log("uploadImageUrl", uploadImageUrl);
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        console.log(file);
+        if (file) {
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+
+                const response = await apiClient.post('/upload', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                console.log(response.data)
+                if (response.data.success) {
+                    setUploadImageUrl(response.data.imageUrl);
+
+                }
+            } catch (err) {
+                console.log(err)
+                setError('Failed to upload image');
+            }
+        }
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
     useEffect(() => {
         if (!socket) return;
-    
+
         const handleMessage = (mes) => {
             console.log("New message received:", mes);
             const updatedChat = [...(Chat[mes.conversationId]?.Message || []), mes];
-    
+
             dispatch(
                 setChat({
                     ...Chat,
@@ -26,21 +66,21 @@ function ChatSend({socket}) {
                 })
             );
         };
-    
+
         const handleConnectError = (err) => {
             console.error("Socket connection error:", err);
         };
-    
+
         socket.on("message", handleMessage);
         socket.on("connect_error", handleConnectError);
-    
+
         return () => {
             socket.off("message", handleMessage);
             socket.off("connect_error", handleConnectError);
         };
-    
+
     }, [socket, Chat, ConversationId, dispatch]);
-    
+
     useEffect(() => {
         const textarea = textareaRef.current;
         if (textarea) {
@@ -50,14 +90,14 @@ function ChatSend({socket}) {
     }, [message]);
 
     const sendMessage = () => {
-        if (!message.trim() || !socket || !ConversationId) return;
+        if ( !socket || !ConversationId ||!(message.trim()||uploadImageUrl)) return;
 
         const newMessage = {
             sender: User.userId,
             message: message.trim(),
             conversationId: ConversationId,
             timestamp: new Date().toISOString(),
-            isImage: false,
+            imageUrl: uploadImageUrl ,
         };
 
         try {
@@ -73,6 +113,7 @@ function ChatSend({socket}) {
                 })
             );
             setMessage("");
+            setUploadImageUrl(null); // Reset the image URL after sending the message
         } catch (err) {
             console.error("Failed to send message:", err);
         }
@@ -80,11 +121,17 @@ function ChatSend({socket}) {
 
     return (
         <div className="h-24 w-full flex items-center border-t-2 bg-white px-4 shadow-sm">
-           
-            <button
-                title="Attach File"
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
+
+            {uploadImageUrl && (
+                <div className="mb-4 flex items-center gap-4">
+                    <img
+                        src={uploadImageUrl}
+                        className="h-12 w-12 rounded-full border shadow"
+                        alt="Uploaded"
+                    />
+                </div>
+            )}
+            <label className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                 <svg
                     className="h-8 w-8 text-gray-600"
                     fill="currentColor"
@@ -93,7 +140,16 @@ function ChatSend({socket}) {
                 >
                     <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z" />
                 </svg>
-            </button>
+
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                />
+            </label>
+
+
 
             <textarea
                 ref={textareaRef}
@@ -109,10 +165,11 @@ function ChatSend({socket}) {
                 }}
             />
 
-            {/* Send Button */}
             <button
                 onClick={sendMessage}
-                disabled={!message.trim() || !ConversationId}
+                disabled={
+                    !ConversationId || (!message.trim() && !uploadImageUrl)
+                }
                 title="Send Message"
                 className="p-2 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50"
             >

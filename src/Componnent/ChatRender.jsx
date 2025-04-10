@@ -35,7 +35,7 @@ function ChatRender() {
                                 : 'bg-gray-200 text-black'
                         }`}
                     >
-                        {message.isImage ? (
+                        {message?.imageUrl ? (
                             <img
                                 src={message.imageUrl}
                                 alt="Chat image"

@@ -1,8 +1,9 @@
 import React, { useEffect,useState } from 'react';
 import { useSelector,useDispatch } from 'react-redux';
 import { setConversationId, setCurrChat } from '../Redux/globalSlice';
+import { setLayout } from '../Redux/globalSlice';
 function ContactBox({data:ConversationId,socket}) {
-    const {Chat,User,ContactData ,Notifications}=useSelector((state)=>state.Chat)
+    const {Chat,User,ContactData ,Notifications,layout}=useSelector((state)=>state.Chat)
     
     const [contactUserId,setContactUserId]=useState("");
     const [NotificationKey,setNotificationKey]=useState("");
@@ -11,6 +12,8 @@ function ContactBox({data:ConversationId,socket}) {
     // console.log(NotificationKey,"NOTIFICATIONKEY",Notifications[NotificationKey])
      const handleConversationId=()=>{
         dispatch(setConversationId(ConversationId));
+        if(layout==="contacts")
+            dispatch(setLayout("chat"));
         socket.emit("deleteNotification", `${NotificationKey}-${ConversationId}`);
      }
      useEffect(()=>{

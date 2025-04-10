@@ -10,6 +10,8 @@ function Contact({socket}){
 const {User} =useSelector((state)=>state.Chat);
 const dispatch=useDispatch();
 const {Notifications}=useSelector((state)=>state.Chat);
+
+const {layout} =useSelector((state)=>state.Chat);
 useEffect(() => {
   if (!socket) return;
 
@@ -35,11 +37,11 @@ useEffect(() => {
   };
 
 }, [socket, Notifications, dispatch]);
-
-console.log(Notifications,"NOTIFICATION")
+if(layout==="chat")
+  return null;
 
 return(
-    <div className="max-h-screen w-4/12 ">
+    <div className={`max-h-screen ${layout==="both" ? "w-5/12": "w-full"} `}>
         <ContactHeader/>
         <div className=" overflow-y-scroll h-full pb-16">
           {

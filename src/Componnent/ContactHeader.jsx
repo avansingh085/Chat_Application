@@ -6,14 +6,13 @@ function ContactHeader() {
 
     return (
         <div className="w-full border-y-2 bg-white shadow-sm">
-            {/* Top Section: Title and Actions */}
+            
             <div className="h-20 flex items-center justify-between px-4 md:px-8 lg:px-16">
-                {/* Title */}
+               
                 <h1 className="text-2xl md:text-3xl font-semibold text-gray-800">Chats</h1>
 
-                {/* Action Buttons */}
                 <div className="flex items-center space-x-4">
-                    {/* Create New Contact Button */}
+                   
                     <button
                         onClick={() => setShowCreateContact((prev) => !prev)}
                         title="New Chat"
@@ -29,16 +28,10 @@ function ContactHeader() {
                         </svg>
                     </button>
 
-                    {/* Profile Avatar */}
-                    <img
-                        className="h-10 w-10 md:h-12 md:w-12 rounded-full border-2 border-gray-300"
-                        src="https://randomuser.me/api/portraits/women/44.jpg"
-                        alt="User Profile"
-                    />
+                   
                 </div>
             </div>
 
-            {/* Bottom Section: Search Bar */}
             <div className="h-16 flex items-center justify-center px-4">
                 <div className="flex items-center w-full md:w-3/4 lg:w-1/2 border-2 border-gray-300 rounded-lg overflow-hidden bg-gray-50">
                     <svg

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import UserProfile from './userProfile';
-import { useSelector } from 'react-redux';
-
+import { useSelector,useDispatch } from 'react-redux';
+import { setLayout } from '../Redux/globalSlice';
 function Hamburger() {
     const [isOpenProfile, setOpenProfile] = useState(false);
      const {User}=useSelector((state)=>state.Chat);
+     const dispatch=useDispatch();
+    const {layout}=useSelector((state)=>state.Chat);
     return (
         <div className="w-16 h-screen border-x-2 bg-gray-100 flex flex-col justify-between py-4">
             
@@ -15,11 +17,11 @@ function Hamburger() {
                     </svg>
                 </a>
 
-                <a href="#messages" title="Messages">
+                <button href="#messages" title="Messages" onClick={() => dispatch(setLayout('chat'))}>
                     <svg className="h-8 w-8 text-gray-700 hover:text-blue-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z" />
                     </svg>
-                </a>
+                </button>
 
                 <a href="#notifications" title="Notifications">
                     <svg className="h-8 w-8 text-gray-700 hover:text-blue-500" fill="currentColor" viewBox="0 0 24 24">
@@ -27,11 +29,11 @@ function Hamburger() {
                     </svg>
                 </a>
 
-                <a href="#contacts" title="Contacts">
+                <button href="#contacts" title="Contacts" onClick={((e) => dispatch(setLayout('contacts')))}>
                     <svg className="h-8 w-8 text-gray-700 hover:text-blue-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M16.5 13c-1.2 0-3.07.34-4.5 1-1.43-.67-3.3-1-4.5-1C5.33 13 2 14.08 2 16.25V19h20v-2.75c0-2.17-3.33-3.25-5.5-3.25zM12.5 11c1.38 0 2.5-1.12 2.5-2.5S13.88 6 12.5 6 10 7.12 10 8.5 11.12 11 12.5 11z" />
                     </svg>
-                </a>
+                </button>
             </div>
             <div className="grid gap-6 w-16 items-center justify-center">
                 <button title="Profile" onClick={() => setOpenProfile(prev => !prev)}>
