@@ -11,7 +11,7 @@ function ContactBox({data:ConversationId,socket}) {
    
     // console.log(NotificationKey,"NOTIFICATIONKEY",Notifications[NotificationKey])
      const handleConversationId=()=>{
-        dispatch(setConversationId(ConversationId));
+            dispatch(setConversationId(ConversationId));
         if(layout==="contacts")
             dispatch(setLayout("chat"));
         socket.emit("deleteNotification", `${NotificationKey}-${ConversationId}`);

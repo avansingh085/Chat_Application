@@ -40,7 +40,7 @@ function ChatHeader() {
                     onClick={()=>{setShowProfile(!showProfile)}}
                 />
                 {
-                  showProfile&&<Profile onClose={()=>{setShowProfile(false)}} isOpen={showProfile} group={Chat[ConversationId]?.group} profileUser={ContactData[contactUserId]} />
+                  showProfile&&<Profile onClose={()=>{setShowProfile(false)}} isOpen={showProfile} isGroup={(Chat[ConversationId]?.Conversation?.type==="group")} profileUser={ContactData[contactUserId]} />
                 }
                 <div className="flex flex-col">
                   {

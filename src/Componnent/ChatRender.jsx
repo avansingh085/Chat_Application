@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-
+import apiClient from '../utils/apiClient';
+import axios from 'axios';
 function ChatRender() {
     const { ConversationId, Chat, User } = useSelector((state) => state.Chat);
     const chatContainerRef = useRef(null); 
@@ -14,7 +15,20 @@ function ChatRender() {
         }
       
     }, [Chat[ConversationId]?.Message]); 
-    
+    const handleJoinLinkClick =async (e) => {
+        e.preventDefault();
+        try{
+        const joinLink = e.currentTarget.value;
+        console.log("Join link clicked:", joinLink);
+      let result=await apiClient.get(joinLink);
+      console.log("Join link result:", result.data);
+      if(result.data.success){
+        console.log("Join link result:", result.data);
+    }
+}catch(err){
+    console.log("Error joining link:", err);
+}
+    };
 
     return (
         <div
@@ -31,19 +45,95 @@ function ChatRender() {
                     <div
                         className={`max-w-[70%] rounded-lg p-3 ${
                             message.sender === User?.userId
-                                ? 'bg-blue-500 text-white'
+                                ? 'bg-green-200 text-black'
                                 : 'bg-gray-200 text-black'
                         }`}
                     >
-                        {message?.imageUrl ? (
-                            <img
-                                src={message.imageUrl}
-                                alt="Chat image"
-                                className="-z-1 max-w-full rounded-lg"
-                            />
-                        ) : (
-                            <p className="-z-2">{message.message}</p>
-                        )}
+                  {message?.imageUrl ? (
+  <img
+    src={message.imageUrl}
+    alt="Chat image"
+    className="-z-1 max-w-full rounded-lg"
+  />
+) : (
+  (() => {
+    const joinLinkRegex = /http:\/\/localhost:3001\/group\/[a-zA-Z0-9-]+\/[a-zA-Z0-9]+\/joinLink/g;
+    const genericLinkRegex = /(https?:\/\/[^\s]+)/g;
+
+    const parts = [];
+    let lastIndex = 0;
+
+    for (const match of message.message.matchAll(joinLinkRegex)) {
+      const matchStart = match.index;
+      const matchEnd = match.index + match[0].length;
+
+      if (matchStart > lastIndex) {
+        const textBetween = message.message.substring(lastIndex, matchStart);
+
+        const subParts = textBetween.split(genericLinkRegex).map((subPart) => {
+          if (genericLinkRegex.test(subPart) && !joinLinkRegex.test(subPart)) {
+            return { type: 'link', url: subPart };
+          }
+          return subPart;
+        });
+
+        parts.push(...subParts);
+      }
+
+      parts.push({ type: 'joinLink', url: match[0] });
+      lastIndex = matchEnd;
+    }
+
+    
+    if (lastIndex < message.message.length) {
+      const rest = message.message.substring(lastIndex);
+      const restParts = rest.split(genericLinkRegex).map((subPart) => {
+        if (genericLinkRegex.test(subPart) && !joinLinkRegex.test(subPart)) {
+          return { type: 'link', url: subPart };
+        }
+        return subPart;
+      });
+
+      parts.push(...restParts);
+    }
+
+    return (
+      <p className="-z-2 flex flex-wrap items-center gap-2">
+        {parts.map((part, index) => {
+          if (typeof part === 'string') {
+            return <span key={index}>{part}</span>;
+          } else if (part.type === 'joinLink') {
+            return (
+             
+                <button className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition" value={part.url} key={index} onClick={handleJoinLinkClick}>
+                  Join Group
+                </button>
+            
+            );
+          } else if (part.type === 'link') {
+            return (
+              <a
+                key={index}
+                href={part.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 underline"
+              >
+                {part.url}
+              </a>
+            );
+          } else {
+            return null;
+          }
+        })}
+      </p>
+    );
+  })()
+)}
+
+
+
+
                         <span
                             className={`text-xs mt-1 block ${
                                 message.sender === User?.userId ? 'text-blue-100' : 'text-gray-600'
