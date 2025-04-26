@@ -20,7 +20,7 @@ function ChatSend({ socket }) {
         if (file) {
             try {
                 const formData = new FormData();
-                formData.append('image', file);
+                formData.append('file', file);
 
                 const response = await apiClient.post('/upload', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
@@ -113,7 +113,7 @@ function ChatSend({ socket }) {
                 })
             );
             setMessage("");
-            setUploadImageUrl(null); // Reset the image URL after sending the message
+            setUploadImageUrl(null); 
         } catch (err) {
             console.error("Failed to send message:", err);
         }
@@ -142,11 +142,11 @@ function ChatSend({ socket }) {
                 </svg>
 
                 <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                />
+    type="file"
+    accept="*/*"
+    onChange={handleImageUpload}
+    className="hidden"
+/>
             </label>
 
 
