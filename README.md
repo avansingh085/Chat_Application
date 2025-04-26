@@ -1,3 +1,9 @@
+
+# Chat Application
+
+Here is a preview of the website:
+
+![Website Image](https://github.com/avansingh085/Chat_Application/blob/main/public/website_image.png?raw=true)
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
