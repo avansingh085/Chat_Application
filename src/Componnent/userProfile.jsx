@@ -43,10 +43,11 @@ const ProfilePopup = ({ onClose, onSave }) => {
         
         if (response.data.success) {
             dispatch(setUser({...User,profilePicture}));
+           
           handleInputChange('profilePicture', response.data.imageUrl);
         }
       } catch (err) {
-        setError('Failed to upload image');
+        console.log(err);
       }
     }
   };
@@ -65,7 +66,7 @@ const ProfilePopup = ({ onClose, onSave }) => {
       setLoading(true);
       setError(null);
       validateForm();
-      
+      console.log({...formData},User.userId,"---------------------------")
       const res = await apiClient.post('/updateProfile', {
         ...formData,
         userId: User.userId
