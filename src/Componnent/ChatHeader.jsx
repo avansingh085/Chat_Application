@@ -11,7 +11,7 @@ function ChatHeader() {
   const handleShowProfile=()=>{
 
   }
-  console.log(contactUserId,"AVANNA<")
+ 
    useEffect(()=>{
           if(!Chat)
               return;
@@ -19,7 +19,7 @@ function ChatHeader() {
           console.log(Chat)
           if(Chat[ConversationId]?.Conversation?.type!=="group")
           {
-            console.log(Chat[ConversationId]?.Conversation?.participants,"pppppppppppppp")
+           
               if(Chat[ConversationId]?.Conversation?.participants[1]===userId)
               {
                   setContactUserId(Chat[ConversationId]?.Conversation?.participants[0])
@@ -29,11 +29,11 @@ function ChatHeader() {
                   setContactUserId(Chat[ConversationId]?.Conversation?.participants[1])
               }
           }
-          console.log(userId)
+         
        },[Chat,ConversationId])
     return (
         <div className="h-20 w-full border-y-2 bg-white flex items-center justify-between px-4 shadow-sm">
-            {/* Left Section: User Info */}
+          
             <div className="flex items-center space-x-4">
                 <img
                     className="h-14 w-14 rounded-full border-2 border-gray-300"
@@ -53,7 +53,6 @@ function ChatHeader() {
                 </div>
             </div>
 
-            {/* Right Section: Action Buttons */}
             <div className="flex items-center space-x-4">
                 {/* Video Call Button */}
                 <button
@@ -74,7 +73,6 @@ function ChatHeader() {
                     isVideoCall&&<VideoCall onClose={()=>{setIsVideoCall(false)}} isOpen={isVideoCall} roomId={contactUserId} />
                 }
 
-                {/* Voice Call Button */}
                 <button
                     title="Voice Call"
                     className="p-2 rounded-full hover:bg-gray-200 transition-colors"
