@@ -16,7 +16,7 @@ function ChatSend({ socket }) {
     console.log("uploadImageUrl", uploadImageUrl);
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
-        console.log(file);
+       
         if (file) {
             try {
                 const formData = new FormData();
@@ -36,15 +36,6 @@ function ChatSend({ socket }) {
             }
         }
     };
-
-
-
-
-
-
-
-
-
 
 
 

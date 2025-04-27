@@ -42,7 +42,7 @@ const ProfilePopup = ({ onClose, onSave }) => {
         });
         
         if (response.data.success) {
-            dispatch(setUser({...User,profilePicture}));
+            dispatch(setUser({...User,profilePicture:response.data.imageUrl}));
            
           handleInputChange('profilePicture', response.data.imageUrl);
         }
