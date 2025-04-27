@@ -64,7 +64,7 @@ function App() {
   console.log(isLogin);
 
   return (
-    <div className="h-screen w-screen flex justify-center items-center flex-col">
+    <div className="max-h-screen max-w-screen flex justify-center items-center flex-col">
      
       {/* {render ? (isLogin ? <Componnnent /> : <Login />) : <div className="h-screen w-screen flex justify-center items-center text-2xl">Loading...</div>} */}
      <Componnnent  socket={socket}/>

@@ -35,7 +35,7 @@ const ProfilePopup = ({ onClose, onSave }) => {
     if (file) {
       try {
         const formData = new FormData();
-        formData.append('image', file);
+        formData.append('file', file);
         formData.append('userId', User.userId);
         const response = await apiClient.post('/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }

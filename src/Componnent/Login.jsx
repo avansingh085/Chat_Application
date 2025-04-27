@@ -63,10 +63,9 @@ const AuthForm = () => {
         }
 
         try {
-            const data = apiPost(`/login`,
+            const data =await apiPost(`/login`,
                { email, password });
            
-
             if (data.success) {
               dispatch(setUser(data.User));
               dispatch(setChat(data.Chat));
