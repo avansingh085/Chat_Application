@@ -22,7 +22,7 @@ function App() {
   const { User } = useSelector((state) => state.Chat);
   useEffect(() => {
     if(socket||!User?.userId) return;
-    const s= io("http://localhost:3001", {
+    const s= io("https://chat-backend-1-3dgt.onrender.com", {
       transports: ["websocket"],
       query: { userId: User?.userId },});
       s.on("connect", () => {
