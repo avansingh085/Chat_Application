@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = "http://localhost:3001"; 
+const BASE_URL = "https://chat-backend-1-3dgt.onrender.com"; 
 
 export const getToken = () => localStorage.getItem("token");
 
