@@ -9,7 +9,7 @@ function Chat({socket}) {
     if(layout === "contacts")
         return null;
     return (
-        <div className="w-full  h-full border-x-2 bg-white">
+        <div className="w-fit  max-h-screen min-h-screen border-x-2 bg-white">
             <ChatHeader />
             <ChatRender socket={socket}/>
             <ChatSend socket={socket}/>
