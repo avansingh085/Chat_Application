@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import { useSelector,useDispatch } from 'react-redux';
 import apiClient from '../utils/apiClient';
-import { setUser } from '../Redux/globalSlice';
+import { setUser } from '../Redux/userSlice';
 
 const ProfilePopup = ({ onClose, onSave }) => {
   const [isEditing, setIsEditing] = useState(false);

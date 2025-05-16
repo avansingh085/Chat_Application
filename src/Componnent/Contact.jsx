@@ -5,7 +5,7 @@ import {useState} from 'react'
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { setNotifications } from "../Redux/globalSlice";
+import { setNotifications } from "../Redux/userSlice";
 function Contact({socket}){
 const {User} =useSelector((state)=>state.Chat);
 const dispatch=useDispatch();

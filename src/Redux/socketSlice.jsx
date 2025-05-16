@@ -1,7 +1,15 @@
 
 import socket from "socket.io-client";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
+export const  socketCon=createAsyncThunk('socket/socketCon',(_,thunkAPI)=>{
+    try{
 
+    }
+    catch(err)
+    {
+
+    }
+})
 const initialState={
     socket: null,
     isConnected: false,

@@ -3,7 +3,7 @@ import Chat from "./Chat";
 import Contact from "./Contact";
 import { Routes, Route} from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { setLayout } from "../Redux/globalSlice";
+import { setLayout } from "../Redux/userSlice";
 import { useEffect } from "react";
 import Login from "./Login";
 function Main({socket}){

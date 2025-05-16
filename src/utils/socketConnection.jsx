@@ -7,13 +7,13 @@ const socketConnection = () => {
     const dispatch = useDispatch();
     const socket = useSelector((state) => state.socket.socket);
     const {User} = useSelector((state) => state.Chat);
-    console.log(User,"USER");
+   
     useEffect(() => {
-        console.log("AVANANNA")
+       
         if (!User?.userId||socket) return;
         
             dispatch(setSocket(s)); 
-            console.log(s,"PLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
+           
             return () => {
                 s.off("connect");
                 s.off("message");

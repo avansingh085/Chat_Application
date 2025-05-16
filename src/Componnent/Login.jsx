@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { apiPost } from "../utils/apiClient"; 
-import {setChat,setUser} from '../Redux/globalSlice';
+import {setChat,setUser} from '../Redux/userSlice';
 const AuthForm = () => {
     const [formType, setFormType] = useState("signUp");
     const [error, setError] = useState("");
@@ -83,98 +83,99 @@ const AuthForm = () => {
     };
 
     return (
-        <div className="min-h-screen w-full flex justify-center items-center bg-gray-100 p-4">
-            <div className="w-full max-w-md bg-white p-6 sm:p-8 rounded-lg shadow-lg">
-                <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800">
-                    {formType === "signUp" ? "Sign Up" : "Login"}
-                </h2>
+        <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-300 p-4">
+  <div className="w-full max-w-md bg-white/70 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/50">
+    <h2 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-gray-800 tracking-tight">
+      {formType === "signUp" ? "Create an Account" : "Welcome Back"}
+    </h2>
 
-                {/* Error Message */}
-                {error && (
-                    <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
-                        {error}
-                    </div>
-                )}
+    {error && (
+      <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm font-medium">
+        {error}
+      </div>
+    )}
 
-                {/* Form Fields */}
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    formType === "signUp" ? handleSignUp() : handleLogin();
-                }}>
-                    {formType === "signUp" && (
-                        <div className="mb-4">
-                            <input
-                                type="text"
-                                name="userId"
-                                placeholder="Enter your name"
-                                className="w-full h-12 px-4 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                                onChange={handleInputChange}
-                                value={userData.userId}
-                            />
-                        </div>
-                    )}
+  
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        formType === "signUp" ? handleSignUp() : handleLogin();
+      }}
+      className="space-y-4"
+    >
+      {formType === "signUp" && (
+        <input
+          type="text"
+          name="userId"
+          placeholder="Full Name"
+          className="w-full h-12 px-4 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          onChange={handleInputChange}
+          value={userData.userId}
+        />
+      )}
 
-                    <div className="mb-4">
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="Enter your email"
-                            className="w-full h-12 px-4 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                            onChange={handleInputChange}
-                            value={userData.email}
-                        />
-                    </div>
+      <input
+        type="email"
+        name="email"
+        placeholder="Email Address"
+        className="w-full h-12 px-4 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+        onChange={handleInputChange}
+        value={userData.email}
+      />
 
-                    <div className="mb-4">
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Enter your password"
-                            className="w-full h-12 px-4 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                            onChange={handleInputChange}
-                            value={userData.password}
-                        />
-                    </div>
+      <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        className="w-full h-12 px-4 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+        onChange={handleInputChange}
+        value={userData.password}
+      />
 
-                    {formType === "signUp" && (
-                        <div className="mb-4">
-                            <input
-                                type="password"
-                                name="confirmPassword"
-                                placeholder="Confirm your password"
-                                className="w-full h-12 px-4 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                                onChange={handleInputChange}
-                                value={userData.confirmPassword}
-                            />
-                        </div>
-                    )}
+      {formType === "signUp" && (
+        <input
+          type="password"
+          name="confirmPassword"
+          placeholder="Confirm Password"
+          className="w-full h-12 px-4 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          onChange={handleInputChange}
+          value={userData.confirmPassword}
+        />
+      )}
 
-                    {/* Submit Button */}
-                    <button
-                        type="submit"
-                        className="w-full h-12 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                        disabled={formType === "signUp" && (!userData.userId || !userData.email || !userData.password || !userData.confirmPassword) ||
-                                  formType === "login" && (!userData.email || !userData.password)}
-                    >
-                        {formType === "signUp" ? "Sign Up" : "Login"}
-                    </button>
-                </form>
+      <button
+        type="submit"
+        className="w-full h-12 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all font-semibold shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
+        disabled={
+          formType === "signUp"
+            ? !userData.userId ||
+              !userData.email ||
+              !userData.password ||
+              !userData.confirmPassword
+            : !userData.email || !userData.password
+        }
+      >
+        {formType === "signUp" ? "Sign Up" : "Login"}
+      </button>
+    </form>
 
-                {/* Toggle Form Type */}
-                <button
-                    className="w-full h-12 mt-4 bg-gray-200 text-blue-600 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                    onClick={() => {
-                        setFormType(formType === "signUp" ? "login" : "signUp");
-                        setError("");
-                        setUserData({ userId: "", email: "", password: "", confirmPassword: "" });
-                    }}
-                >
-                    {formType === "signUp"
-                        ? "Already have an account? Login"
-                        : "Don't have an account? Sign Up"}
-                </button>
-            </div>
-        </div>
+    
+    <p className="text-center text-sm mt-6 text-gray-700">
+      {formType === "signUp" ? "Already have an account?" : "Don't have an account?"}
+      <button
+        className="ml-1 text-blue-600 hover:underline font-semibold"
+        onClick={() => {
+          setFormType(formType === "signUp" ? "login" : "signUp");
+          setError("");
+          setUserData({ userId: "", email: "", password: "", confirmPassword: "" });
+        }}
+      >
+        {formType === "signUp" ? "Login" : "Sign Up"}
+      </button>
+    </p>
+  </div>
+</div>
+
     );
 };
 

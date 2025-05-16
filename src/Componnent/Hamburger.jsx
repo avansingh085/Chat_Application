@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import UserProfile from './userProfile';
 import { useSelector,useDispatch } from 'react-redux';
-import { setLayout } from '../Redux/globalSlice';
+import { setLayout } from '../Redux/userSlice';
 function Hamburger() {
     const [isOpenProfile, setOpenProfile] = useState(false);
      const {User}=useSelector((state)=>state.Chat);

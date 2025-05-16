@@ -2,23 +2,20 @@ import { useEffect, useState } from 'react';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
-import Componnnent from './Componnent/main.jsx'; // Note the typo in "Componnnent"
+import Componnnent from './Componnent/main.jsx'; 
 import { useSelector, useDispatch } from 'react-redux';
 import Login from './Componnent/Login.jsx';
-import { apiGet, apiPost } from './utils/apiClient.js';
 import { useNavigate } from 'react-router-dom';
-import { setChat, setUser,setContactData } from './Redux/globalSlice.jsx';
 import io from "socket.io-client";
+import { fetchUser } from './Redux/userSlice.jsx';
+import DotLoader from './Componnent/Loader.jsx';
 
 function App() {
-
-  
   const [socket,setSocket] = useState(null);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [render, setRender] = useState(false);
   const isLogin = useSelector((state) => state.Chat?.isLogin);
-
+  const loading=useSelector((state)=>state.Chat.loading)
   const { User } = useSelector((state) => state.Chat);
   useEffect(() => {
     if(socket||!User?.userId) return;
@@ -37,37 +34,21 @@ function App() {
         s.disconnect();
       }
   }, [User]);
-  console.log(socket,"OPPPPPPPPPPPPPPPPPP")
+ 
   useEffect(() => {
-    async function verifyToken() {
-      try {
-        let data = await apiPost('/verifyToken', { token: localStorage.getItem('token') });
-        console.log(data);
-        if (data.success) {
-          console.log(data);
-          dispatch(setChat(data.Chat));
-          dispatch(setUser(data.User));
-          dispatch(setContactData(data.ContactData));
-          navigate('/chat');
-          setRender(true);
-        } else {
-          navigate('/');
-        }
-      } catch (error) {
-        console.log(error);
-        setRender(true);
-      }
-    }
-    verifyToken();
+    dispatch(fetchUser());
+    setRender(true);
   }, []);
 
-  console.log(isLogin);
-
+if(loading)
+{
+  return <DotLoader/>
+}
   return (
     <div className="max-h-screen max-w-screen flex justify-center items-center flex-col">
      
-      {/* {render ? (isLogin ? <Componnnent /> : <Login />) : <div className="h-screen w-screen flex justify-center items-center text-2xl">Loading...</div>} */}
-     <Componnnent  socket={socket}/>
+      {render ? (isLogin ? <Componnnent /> : <Login />) : <div className="h-screen w-screen flex justify-center items-center text-2xl">Loading...</div>}
+    
     </div>
   );
 }
