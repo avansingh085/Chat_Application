@@ -1,5 +1,5 @@
 import ContactHeader from "./ContactHeader";
-import fakeContact from './fakeContact'
+
 import ContactBox from './ContactBox';
 import {useState} from 'react'
 import { useSelector } from "react-redux";

@@ -83,9 +83,9 @@ const AuthForm = () => {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-300 p-4">
-  <div className="w-full max-w-md bg-white/70 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/50">
-    <h2 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-gray-800 tracking-tight">
+        <div className="min-h-screen w-full flex items-center justify-center p-4">
+  <div className="w-full max-w-md bg-white backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/50">
+    <h2 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-green-400 tracking-tight">
       {formType === "signUp" ? "Create an Account" : "Welcome Back"}
     </h2>
 
@@ -108,7 +108,7 @@ const AuthForm = () => {
           type="text"
           name="userId"
           placeholder="Full Name"
-          className="w-full h-12 px-4 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          className="w-full h-12 px-4 border  border-t-0 border-x-0 border-b-blue-600 outline-none  rounded-md bg-white "
           onChange={handleInputChange}
           value={userData.userId}
         />
@@ -118,7 +118,7 @@ const AuthForm = () => {
         type="email"
         name="email"
         placeholder="Email Address"
-        className="w-full h-12 px-4 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+        className="w-full h-12 px-4 border border-t-0 border-x-0 border-b-blue-600 outline-none border-gray-300 rounded-md bg-white "
         onChange={handleInputChange}
         value={userData.email}
       />
@@ -127,7 +127,7 @@ const AuthForm = () => {
         type="password"
         name="password"
         placeholder="Password"
-        className="w-full h-12 px-4 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+        className="w-full h-12 px-4 border border-t-0 border-x-0 border-b-blue-600 outline-none rounded-md bg-white  "
         onChange={handleInputChange}
         value={userData.password}
       />
@@ -137,7 +137,7 @@ const AuthForm = () => {
           type="password"
           name="confirmPassword"
           placeholder="Confirm Password"
-          className="w-full h-12 px-4 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          className="w-full h-12 px-4 border  border-t-0 border-x-0 border-b-blue-600 outline-none rounded-md bg-white   "
           onChange={handleInputChange}
           value={userData.confirmPassword}
         />

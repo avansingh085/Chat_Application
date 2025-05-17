@@ -2,9 +2,10 @@ import { useRef, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import apiClient from "../utils/apiClient";
-import { setChat } from "../Redux/globalSlice";
+import { setChat } from "../Redux/userSlice";
 
 function ChatSend({ socket }) {
+    console.log(socket,"connection")
     const [message, setMessage] = useState("");
     const [uploadImageUrl, setUploadImageUrl] = useState(null);
     const { User, Chat, ConversationId } = useSelector((state) => state.Chat);
@@ -81,6 +82,7 @@ function ChatSend({ socket }) {
     }, [message]);
 
     const sendMessage = () => {
+        console.log(socket,ConversationId,message,uploadImageUrl)
         if ( !socket || !ConversationId ||!(message.trim()||uploadImageUrl)) return;
 
         const newMessage = {
@@ -90,7 +92,7 @@ function ChatSend({ socket }) {
             timestamp: new Date().toISOString(),
             imageUrl: uploadImageUrl ,
         };
-
+console.log(newMessage,"HELLOW")
         try {
             socket.emit("message", newMessage);
             const updatedChat = [...(Chat[ConversationId]?.Message || []), newMessage];
@@ -111,7 +113,7 @@ function ChatSend({ socket }) {
     };
 
     return (
-        <div className="h-24 w-full flex items-center border-t-2 bg-white px-4 shadow-sm">
+        <div className="h-24 sticky bottom-0  w-full flex items-center border-t-2 bg-white px-4 shadow-sm" >
 
             {uploadImageUrl && (
                 <div className="mb-4 flex items-center gap-4">

@@ -148,12 +148,12 @@ function ChatRender() {
 
 
 
-            <span
-              className={`text-xs mt-1 block ${message.sender === User?.userId ? 'text-blue-100' : 'text-gray-600'
+            <div
+              className={`text-xs -z-50 mt-1 block ${message.sender === User?.userId ? 'text-blue-100' : 'text-gray-600'
                 }`}
             >
               {new Date(message.timestamp).toLocaleTimeString()}
-            </span>
+            </div>
           </div>
         </div>
       ))}
