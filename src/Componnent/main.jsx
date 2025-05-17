@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setLayout } from "../Redux/userSlice";
 import { useEffect } from "react";
 import Login from "./Login";
+import ProtectedRoute from "./ProtectRoute";
 function Main({socket}){
     const dispatch=useDispatch();
     const {layout} = useSelector((state) => state.Chat);
@@ -30,15 +31,17 @@ function Main({socket}){
         <div className={`h-screen w-screen flex overflow-y-hidden `}>
             
                 <Routes>
-                    <Route path="/chat" element={<>
+                    <Route path="/chat" element={<ProtectedRoute>
                     <Hamburger/>
                      <Contact socket={socket}/>
                       <Chat socket={socket}/>
-                    </>}/>
-                    <Route path="/contact" element={
-                    <Contact socket={socket}/>}/>
-                    <Route path="/chats" element={<Chat socket={socket}/>}/>
+                    </ProtectedRoute>}/>
+                    <Route path="/contact" element={<ProtectedRoute>
+                    <Contact socket={socket}/></ProtectedRoute>}/>
+                    <Route path="/chats" element={<ProtectedRoute><Chat socket={socket}/></ProtectedRoute>}/>
                     <Route path="/" element={
+                    <Login/>}/>
+                    <Route path="/Login" element={
                     <Login/>}/>
                 </Routes>
                
