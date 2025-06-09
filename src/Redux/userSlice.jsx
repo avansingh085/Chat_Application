@@ -1,10 +1,8 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
-import  { apiPost } from "../utils/apiClient";
+import  { apiGet, apiPost } from "../utils/apiClient";
 export const fetchUser=createAsyncThunk('user/fetchuser',async (_,thunkAPI)=>{
     try{
-      return await apiPost('/verifyToken',{ token: localStorage.getItem('token') });
-      
-
+      return await apiGet('/user/get');
     }
     catch(err)
     {

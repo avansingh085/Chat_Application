@@ -23,12 +23,12 @@ function ChatSend({ socket }) {
                 const formData = new FormData();
                 formData.append('file', file);
 
-                const response = await apiClient.post('/upload', formData, {
+                const response = await apiClient.post('/upload/file', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
-                console.log(response.data)
+                
                 if (response.data.success) {
-                    setUploadImageUrl(response.data.imageUrl);
+                    setUploadImageUrl(response.data?.url);
 
                 }
             } catch (err) {

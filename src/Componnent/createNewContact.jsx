@@ -11,7 +11,7 @@ const CreateNewContact = ({ setShowCreateContact }) => {
     const createNewGroup = (e) => {
         e.preventDefault();
         if (groupName.trim().length > 0) {
-            apiPost("/newConversation", {
+            apiPost("/chat/conversation", {
                 groupName,
                 participants: [User.userId],
                 type: "group",
@@ -25,7 +25,7 @@ const CreateNewContact = ({ setShowCreateContact }) => {
     const createNewContact = (e) => {
         e.preventDefault();
         if (userId.trim().length > 0 ) {
-            apiPost("/newConversation", {
+            apiPost("/chat/conversation", {
                 participants: [User.userId, userId],
                 type: "personal",
             }).then(() => {

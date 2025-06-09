@@ -6,6 +6,7 @@ import Login from './Componnent/Login.jsx';
 import io from "socket.io-client";
 import { fetchUser } from './Redux/userSlice.jsx';
 import DotLoader from './Componnent/Loader.jsx';
+import { getToken } from './utils/apiClient.js';
 
 function App() {
   const [socket,setSocket] = useState(null);
@@ -17,7 +18,7 @@ function App() {
   useEffect(() => {
     if(socket||!User?.userId) return;
      
-    const s= io("https://chat-backend-1-3dgt.onrender.com", {
+    const s= io("https://chat-application-backend-w648.onrender.com", {
       transports: ["websocket"],
   
       query: { userId: User?.userId },});
@@ -38,6 +39,7 @@ function App() {
   }, [User?.userId]);
  
   useEffect(() => {
+    
     dispatch(fetchUser());
      setRender(true);
   }, []);

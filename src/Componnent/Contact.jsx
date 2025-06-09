@@ -16,8 +16,7 @@ useEffect(() => {
   if (!socket) return;
 
   const handleNotification = (data) => {
-    console.log("AVAN_SOCKET", data, Notifications);
-
+   
     const newNotification = {
       ...Notifications,
       [data.notificationKey]: {

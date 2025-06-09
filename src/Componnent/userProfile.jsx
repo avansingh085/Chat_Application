@@ -37,14 +37,14 @@ const ProfilePopup = ({ onClose, onSave }) => {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('userId', User.userId);
-        const response = await apiClient.post('/upload', formData, {
+        const response = await apiClient.post('/upload/file', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         
         if (response.data.success) {
-            dispatch(setUser({...User,profilePicture:response.data.imageUrl}));
+            dispatch(setUser({...User,profilePicture:response.data.url}));
            
-          handleInputChange('profilePicture', response.data.imageUrl);
+          handleInputChange('profilePicture', response.data.url);
         }
       } catch (err) {
         console.log(err);
@@ -66,8 +66,8 @@ const ProfilePopup = ({ onClose, onSave }) => {
       setLoading(true);
       setError(null);
       validateForm();
-      console.log({...formData},User.userId,"---------------------------")
-      const res = await apiClient.post('/updateProfile', {
+      
+      const res = await apiClient.post('/user/update-profile', {
         ...formData,
         userId: User.userId
       });

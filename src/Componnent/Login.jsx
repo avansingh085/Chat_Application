@@ -37,16 +37,12 @@ const AuthForm = () => {
         }
 
         try {
-            const data = await apiPost("/sign_up", { userId, email, password });
-            if (data.success) {
-                dispatch(setUser(data.User));
-                dispatch(setChat(data.Chat));
+            const data = await apiPost("/auth/signup", { userId, email, password });
+           
                 localStorage.setItem("token", data.token);
                 navigate("/chat");
                 setError("");
-            } else {
-                setError(data.message || "Sign-up failed.");
-            }
+          
             console.log(data)
         } catch (error) {
             setError("An error occurred during sign-up. Please try again.");
@@ -63,19 +59,15 @@ const AuthForm = () => {
         }
 
         try {
-            const data =await apiPost(`/login`,
+            const data =await apiPost(`/auth/login`,
                { email, password });
            
-            if (data.success) {
-              dispatch(setUser(data.User));
-              dispatch(setChat(data.Chat));
+              // dispatch(setUser(data.User));
+              // dispatch(setChat(data.Chat));
               localStorage.setItem("token", data.token);
               
               navigate("/chat");
                 setError("");
-            } else {
-                setError(data.message || "Invalid email or password.");
-            }
         } catch (error) {
             setError("An error occurred during login. Please try again.");
             console.error("Login Error:", error);

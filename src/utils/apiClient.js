@@ -1,6 +1,6 @@
 import axios from "axios";
-  const BASE_URL = "https://chat-backend-1-3dgt.onrender.com"; 
-//  const BASE_URL = "http://localhost:3001"; 
+   const BASE_URL = "https://chat-application-backend-w648.onrender.com"; 
+//   const BASE_URL = "http://localhost:3001/api"; 
 
 export const getToken = () => localStorage.getItem("token");
 
@@ -17,8 +17,8 @@ const apiClient = axios.create({
         "Content-Type": "application/json",
     },
 });
-apiClient.interceptors.request.use((config) => {
-    const token = getToken();
+apiClient.interceptors.request.use(async (config) => {
+    const token = await getToken();
     if (token) {
         config.headers.Authorization = `${token}`;
     }
@@ -32,7 +32,7 @@ export const apiGet = async (url, params = {}) => {
         const response = await apiClient.get(url, { params });
         return response.data;
     } catch (error) {
-        console.error("GET Error:", error.response?.data || error.message);
+        console.log("GET Error:", error.response?.data || error.message);
         throw error;
     }
 };
