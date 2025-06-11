@@ -13,8 +13,7 @@ function ChatSend({ socket }) {
 
     const [error, setError] = useState(null);
     const textareaRef = useRef(null);
-    //image upload
-    console.log("uploadImageUrl", uploadImageUrl);
+   
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
 

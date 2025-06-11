@@ -40,8 +40,9 @@ const ProfilePopup = ({ onClose, onSave }) => {
         const response = await apiClient.post('/upload/file', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
-
+       await apiClient.post('/user/update-profile',{userId:User._id,status:User.status,profilePicture:response.data.url});
         if (response.data.success) {
+         
           dispatch(setUser({ ...User, profilePicture: response.data.url }));
 
           handleInputChange('profilePicture', response.data.url);

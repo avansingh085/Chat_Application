@@ -3,55 +3,51 @@ import './App.css';
 import Component from './mainPage.jsx';
 import { useSelector, useDispatch } from 'react-redux';
 import Login from './pages/Login.jsx';
-import io from "socket.io-client";
+import io from 'socket.io-client';
 import { fetchUser } from './Redux/userSlice.jsx';
 import DotLoader from './components/Common/Loader.jsx';
-import { getToken } from './utils/apiClient.js';
 
 function App() {
-  const [socket, setSocket] = useState(null);
   const dispatch = useDispatch();
+
+  const [socket, setSocket] = useState(null);
+
   const loading = useSelector((state) => state.Chat?.loading);
   const { User } = useSelector((state) => state.Chat);
+
+  // Fetch user on initial mount
   useEffect(() => {
-    if (socket || !User?.userId) return;
+    dispatch(fetchUser());
+  }, [dispatch]);
 
-    const s = io("https://chat-application-backend-w648.onrender.com", {
-      transports: ["websocket"],
+  // Initialize socket connection after user is available
+  useEffect(() => {
+    if (!User?.userId || socket) return;
 
-      query: { userId: User?.userId },
+    const socketInstance = io(import.meta.env.VITE_BACKEND_URL, {
+      transports: ['websocket'],
+      query: { userId: User.userId },
     });
-    s.on("connect", () => {
-      console.log("Connected to socket:", s.id, s);
-      setSocket(s);
-    })
 
+    socketInstance.on('connect', () => {
+      console.log('Connected to socket:', socketInstance.id);
+      setSocket(socketInstance);
+    });
 
     return () => {
-      s.off("connect");
-      s.off("message");
-      s.off("connect_error");
-      s.off("notification");
-      s.disconnect();
-    }
+      socketInstance.off('connect');
+      socketInstance.off('message');
+      socketInstance.off('connect_error');
+      socketInstance.off('notification');
+      socketInstance.disconnect();
+    };
+  }, [User?.userId, socket]);
 
-  }, [User?.userId]);
-
-  useEffect(() => {
-
-    dispatch(fetchUser());
-   
-  }, []);
-  if (loading) {
-    return <DotLoader />
-  }
- 
+  if (loading) return <DotLoader />;
 
   return (
     <main className="max-h-screen max-w-screen flex justify-center items-center flex-col">
-
-     <Component/>
-
+      <Component socket={socket} />
     </main>
   );
 }
