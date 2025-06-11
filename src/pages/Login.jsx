@@ -39,8 +39,10 @@ const AuthForm = () => {
     try {
       const data = await apiPost("/auth/signup", { userId, email, password });
 
-      localStorage.setItem("ChatsToken", data.token);
+     await localStorage.setItem("ChatsToken", data.token);
+       dispatch(fetchUser());
       navigate("/chat");
+
       setError("");
     } catch (error) {
       setError("An error occurred during sign-up. Please try again.");
@@ -59,8 +61,8 @@ const AuthForm = () => {
     try {
       const data = await apiPost(`/auth/login`,
         { email, password });
-      localStorage.setItem("ChatsToken", data.token);
-      //  dispatch(fetchUser());
+     await localStorage.setItem("ChatsToken", data.token);
+       dispatch(fetchUser());
       navigate("/chat");
       setError("");
     } catch (error) {
