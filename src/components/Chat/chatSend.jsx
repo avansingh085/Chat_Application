@@ -5,7 +5,7 @@ import apiClient from "../../utils/apiClient";
 import { setChat } from "../../Redux/userSlice";
 
 function ChatSend({ socket }) {
-    console.log(socket, "connection")
+    // console.log(socket, "connection")
     const [message, setMessage] = useState("");
     const [uploadImageUrl, setUploadImageUrl] = useState(null);
     const { User, Chat, ConversationId } = useSelector((state) => state.Chat);

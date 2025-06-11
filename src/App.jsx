@@ -14,13 +14,13 @@ function App() {
 
   const loading = useSelector((state) => state.Chat?.loading);
   const { User } = useSelector((state) => state.Chat);
-
   // Fetch user on initial mount
   useEffect(() => {
     dispatch(fetchUser());
   }, [dispatch]);
-
+  
   // Initialize socket connection after user is available
+ 
   useEffect(() => {
     if (!User?.userId || socket) return;
 
@@ -41,7 +41,7 @@ function App() {
       socketInstance.off('notification');
       socketInstance.disconnect();
     };
-  }, [User?.userId, socket]);
+  }, [User?.userId]);
 
   if (loading) return <DotLoader />;
 

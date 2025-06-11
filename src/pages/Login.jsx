@@ -2,14 +2,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { apiPost } from "../utils/apiClient";
-import { fetchUser, setChat, setUser } from '../Redux/userSlice';
+import { fetchUser } from '../Redux/userSlice';
+import { FaSpinner } from "react-icons/fa";
+
 const AuthForm = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [formType, setFormType] = useState("signUp");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const isLogin = useSelector((state) => state.Chat.isLogin);
-
+  const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState({
     userId: "",
     email: "",
@@ -17,57 +19,50 @@ const AuthForm = () => {
     confirmPassword: "",
   });
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setUserData({ ...userData, [name]: value });
+  const isLogin = formType === "login";
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUserData(prev => ({ ...prev, [name]: value }));
     setError("");
   };
 
-  const handleSignUp = async () => {
+  const validateForm = () => {
     const { userId, email, password, confirmPassword } = userData;
-    console.log(userData)
-    if (!userId || !email || !password || !confirmPassword) {
-      setError("All fields are required.");
-      return;
+    if (!email || !password || (!isLogin && (!userId || !confirmPassword))) {
+      setError("Please fill in all required fields.");
+      return false;
     }
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match!");
-      return;
+    if (!isLogin && password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return false;
     }
 
-    try {
-      const data = await apiPost("/auth/signup", { userId, email, password });
-
-     await localStorage.setItem("ChatsToken", data.token);
-       dispatch(fetchUser());
-      navigate("/chat");
-
-      setError("");
-    } catch (error) {
-      setError("An error occurred during sign-up. Please try again.");
-      console.error("Sign-Up Error:", error);
-    }
+    return true;
   };
 
-  const handleLogin = async () => {
-    const { email, password } = userData;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
 
-    if (!email || !password) {
-      setError("Email and password are required.");
-      return;
-    }
-
+    setLoading(true);
     try {
-      const data = await apiPost(`/auth/login`,
-        { email, password });
-     await localStorage.setItem("ChatsToken", data.token);
-       dispatch(fetchUser());
+      const payload = isLogin
+        ? { email: userData.email, password: userData.password }
+        : { userId: userData.userId, email: userData.email, password: userData.password };
+
+      const endpoint = isLogin ? "/auth/login" : "/auth/signup";
+
+      const data = await apiPost(endpoint, payload);
+
+      localStorage.setItem("ChatsToken", data.token);
+      await dispatch(fetchUser());
       navigate("/chat");
-      setError("");
-    } catch (error) {
-      setError("An error occurred during login. Please try again.");
-      console.error("Login Error:", error);
+    } catch (err) {
+      setError(err?.response?.data?.message || "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -75,7 +70,7 @@ const AuthForm = () => {
     <div className="min-h-screen w-full flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/50">
         <h2 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-green-400 tracking-tight">
-          {formType === "signUp" ? "Create an Account" : "Welcome Back"}
+          {isLogin ? "Welcome Back" : "Create an Account"}
         </h2>
 
         {error && (
@@ -84,22 +79,16 @@ const AuthForm = () => {
           </div>
         )}
 
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            formType === "signUp" ? handleSignUp() : handleLogin();
-          }}
-          className="space-y-4"
-        >
-          {formType === "signUp" && (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {!isLogin && (
             <input
               type="text"
               name="userId"
               placeholder="Full Name"
-              className="w-full h-12 px-4 border  border-t-0 border-x-0 border-b-blue-600 outline-none  rounded-md bg-white "
-              onChange={handleInputChange}
               value={userData.userId}
+              onChange={handleInputChange}
+              className="w-full h-12 px-4 border border-b-blue-600 outline-none rounded-md bg-white"
+              disabled={loading}
             />
           )}
 
@@ -107,64 +96,66 @@ const AuthForm = () => {
             type="email"
             name="email"
             placeholder="Email Address"
-            className="w-full h-12 px-4 border border-t-0 border-x-0 border-b-blue-600 outline-none border-gray-300 rounded-md bg-white "
-            onChange={handleInputChange}
             value={userData.email}
+            onChange={handleInputChange}
+            className="w-full h-12 px-4 border border-b-blue-600 outline-none rounded-md bg-white"
+            disabled={loading}
           />
 
           <input
             type="password"
             name="password"
             placeholder="Password"
-            className="w-full h-12 px-4 border border-t-0 border-x-0 border-b-blue-600 outline-none rounded-md bg-white  "
-            onChange={handleInputChange}
             value={userData.password}
+            onChange={handleInputChange}
+            className="w-full h-12 px-4 border border-b-blue-600 outline-none rounded-md bg-white"
+            disabled={loading}
           />
 
-          {formType === "signUp" && (
+          {!isLogin && (
             <input
               type="password"
               name="confirmPassword"
               placeholder="Confirm Password"
-              className="w-full h-12 px-4 border  border-t-0 border-x-0 border-b-blue-600 outline-none rounded-md bg-white   "
-              onChange={handleInputChange}
               value={userData.confirmPassword}
+              onChange={handleInputChange}
+              className="w-full h-12 px-4 border border-b-blue-600 outline-none rounded-md bg-white"
+              disabled={loading}
             />
           )}
 
           <button
             type="submit"
-            className="w-full h-12 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all font-semibold shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="w-full h-12 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all font-semibold shadow-lg disabled:bg-gray-400 flex items-center justify-center"
             disabled={
-              formType === "signUp"
-                ? !userData.userId ||
-                !userData.email ||
-                !userData.password ||
-                !userData.confirmPassword
-                : !userData.email || !userData.password
+              loading ||
+              (isLogin
+                ? !userData.email || !userData.password
+                : !userData.userId || !userData.email || !userData.password || !userData.confirmPassword)
             }
           >
-            {formType === "signUp" ? "Sign Up" : "Login"}
+            {loading ? <FaSpinner className="animate-spin mr-2" /> : null}
+            {isLogin ? "Login" : "Sign Up"}
           </button>
         </form>
 
-
         <p className="text-center text-sm mt-6 text-gray-700">
-          {formType === "signUp" ? "Already have an account?" : "Don't have an account?"}
+          {isLogin ? "Don't have an account?" : "Already have an account?"}
           <button
-            className="ml-1 text-blue-600 hover:underline font-semibold"
+            type="button"
             onClick={() => {
-              setFormType(formType === "signUp" ? "login" : "signUp");
+              setFormType(isLogin ? "signUp" : "login");
               setError("");
               setUserData({ userId: "", email: "", password: "", confirmPassword: "" });
             }}
+            className="ml-1 text-blue-600 hover:underline font-semibold"
+            disabled={loading}
           >
-            {formType === "signUp" ? "Login" : "Sign Up"}
+            {isLogin ? "Sign Up" : "Login"}
           </button>
         </p>
       </div>
     </div>
-
   );
 };
 

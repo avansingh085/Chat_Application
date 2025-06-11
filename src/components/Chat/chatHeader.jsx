@@ -7,7 +7,7 @@ function ChatHeader() {
   const [showProfile,setShowProfile]=useState(false);
   const [contactUserId,setContactUserId]=useState("");
   const [isVideoCall,setIsVideoCall]=useState(false);
-  console.log(ConversationId,Chat)
+ 
   const handleShowProfile=()=>{
 
   }
@@ -16,7 +16,7 @@ function ChatHeader() {
           if(!Chat)
               return;
           let userId=User?.userId;
-          console.log(Chat)
+          
           if(Chat[ConversationId]?.Conversation?.type!=="group")
           {
            
