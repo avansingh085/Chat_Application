@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import apiClient from '../utils/apiClient';
+import apiClient from '../../utils/apiClient';
 import axios from 'axios';
 function ChatRender() {
   const { ConversationId, Chat, User } = useSelector((state) => state.Chat);
@@ -43,8 +43,8 @@ function ChatRender() {
         >
           <div
             className={`max-w-[70%] rounded-lg p-3 ${message.sender === User?.userId
-                ? 'bg-green-200 text-black'
-                : 'bg-gray-200 text-black'
+              ? 'bg-green-200 text-black'
+              : 'bg-gray-200 text-black'
               }`}
           >
             {message?.imageUrl ? (() => {

@@ -5,6 +5,7 @@ const ProtectedRoute = ({ children }) => {
   if (!useSelector((state)=>state.Chat.isLogin)) {
     return <Navigate to="/Login" replace />;
   }
+  
   return children;
 };
 

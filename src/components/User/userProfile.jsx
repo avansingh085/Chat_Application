@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
-import { useSelector,useDispatch } from 'react-redux';
-import apiClient from '../utils/apiClient';
-import { setUser } from '../Redux/userSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { setUser } from '../../Redux/userSlice';
+import apiClient from '../../utils/apiClient';
 
 const ProfilePopup = ({ onClose, onSave }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -12,7 +12,7 @@ const ProfilePopup = ({ onClose, onSave }) => {
     profilePicture: '',
     status: '',
   });
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -40,10 +40,10 @@ const ProfilePopup = ({ onClose, onSave }) => {
         const response = await apiClient.post('/upload/file', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
-        
+
         if (response.data.success) {
-            dispatch(setUser({...User,profilePicture:response.data.url}));
-           
+          dispatch(setUser({ ...User, profilePicture: response.data.url }));
+
           handleInputChange('profilePicture', response.data.url);
         }
       } catch (err) {
@@ -66,15 +66,15 @@ const ProfilePopup = ({ onClose, onSave }) => {
       setLoading(true);
       setError(null);
       validateForm();
-      
+
       const res = await apiClient.post('/user/update-profile', {
         ...formData,
         userId: User.userId
       });
-      
+
       if (res.data.success) {
-        dispatch(setUser({...User,...formData}))
-       
+        dispatch(setUser({ ...User, ...formData }))
+
         setIsEditing(false);
       }
     } catch (err) {
@@ -89,7 +89,7 @@ const ProfilePopup = ({ onClose, onSave }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md relative">
-        <button 
+        <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl"
         >
@@ -163,7 +163,7 @@ const ProfilePopup = ({ onClose, onSave }) => {
               </label>
               <div className="mt-1 flex flex-wrap gap-2">
                 {User.contacts?.map(contact => (
-                  <span 
+                  <span
                     key={contact}
                     className="px-2 py-1 bg-gray-100 rounded-full text-sm"
                   >

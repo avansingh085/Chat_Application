@@ -1,11 +1,11 @@
 import { useRef, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import apiClient from "../utils/apiClient";
-import { setChat } from "../Redux/userSlice";
+import apiClient from "../../utils/apiClient";
+import { setChat } from "../../Redux/userSlice";
 
 function ChatSend({ socket }) {
-    console.log(socket,"connection")
+    console.log(socket, "connection")
     const [message, setMessage] = useState("");
     const [uploadImageUrl, setUploadImageUrl] = useState(null);
     const { User, Chat, ConversationId } = useSelector((state) => state.Chat);
@@ -17,7 +17,7 @@ function ChatSend({ socket }) {
     console.log("uploadImageUrl", uploadImageUrl);
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
-       
+
         if (file) {
             try {
                 const formData = new FormData();
@@ -26,7 +26,7 @@ function ChatSend({ socket }) {
                 const response = await apiClient.post('/upload/file', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
-                
+
                 if (response.data.success) {
                     setUploadImageUrl(response.data?.url);
 
@@ -82,17 +82,17 @@ function ChatSend({ socket }) {
     }, [message]);
 
     const sendMessage = () => {
-        console.log(socket,ConversationId,message,uploadImageUrl)
-        if ( !socket || !ConversationId ||!(message.trim()||uploadImageUrl)) return;
+        console.log(socket, ConversationId, message, uploadImageUrl)
+        if (!socket || !ConversationId || !(message.trim() || uploadImageUrl)) return;
 
         const newMessage = {
             sender: User.userId,
             message: message.trim(),
             conversationId: ConversationId,
             timestamp: new Date().toISOString(),
-            imageUrl: uploadImageUrl ,
+            imageUrl: uploadImageUrl,
         };
-console.log(newMessage,"HELLOW")
+        console.log(newMessage, "HELLOW")
         try {
             socket.emit("message", newMessage);
             const updatedChat = [...(Chat[ConversationId]?.Message || []), newMessage];
@@ -106,7 +106,7 @@ console.log(newMessage,"HELLOW")
                 })
             );
             setMessage("");
-            setUploadImageUrl(null); 
+            setUploadImageUrl(null);
         } catch (err) {
             console.error("Failed to send message:", err);
         }
@@ -135,11 +135,11 @@ console.log(newMessage,"HELLOW")
                 </svg>
 
                 <input
-    type="file"
-    accept="*/*"
-    onChange={handleImageUpload}
-    className="hidden"
-/>
+                    type="file"
+                    accept="*/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                />
             </label>
 
 

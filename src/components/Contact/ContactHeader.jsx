@@ -6,13 +6,13 @@ function ContactHeader() {
 
     return (
         <div className="w-full border-y-2 bg-white shadow-sm">
-            
+
             <div className="h-20 flex items-center justify-between px-4 md:px-8 lg:px-16">
-               
+
                 <h1 className="text-2xl md:text-3xl font-semibold text-gray-800">Chats</h1>
 
                 <div className="flex items-center space-x-4">
-                   
+
                     <button
                         onClick={() => setShowCreateContact((prev) => !prev)}
                         title="New Chat"
@@ -28,7 +28,7 @@ function ContactHeader() {
                         </svg>
                     </button>
 
-                   
+
                 </div>
             </div>
 

@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import UserProfile from './userProfile';
-import { useSelector,useDispatch } from 'react-redux';
-import { setLayout } from '../Redux/userSlice';
+import UserProfile from '../User/userProfile';
+import { useSelector, useDispatch } from 'react-redux';
+import { setLayout } from '../../Redux/userSlice';
 function Hamburger() {
     const [isOpenProfile, setOpenProfile] = useState(false);
-     const {User}=useSelector((state)=>state.Chat);
-     const dispatch=useDispatch();
-    const {layout}=useSelector((state)=>state.Chat);
+    const { User } = useSelector((state) => state.Chat);
+    const dispatch = useDispatch();
+    const { layout } = useSelector((state) => state.Chat);
     return (
         <div className="w-16 h-screen border-x-2 bg-gray-100 flex flex-col justify-between py-4">
-            
+
             <div className="grid gap-6 w-16 items-center justify-center">
                 <a href="#home" title="Home">
                     <svg className="h-8 w-8 text-gray-700 hover:text-blue-500" fill="currentColor" viewBox="0 0 24 24">
@@ -39,10 +39,10 @@ function Hamburger() {
                 <button title="Profile" onClick={() => setOpenProfile(prev => !prev)}>
                     <img
                         className="h-12 w-12 rounded-full border-2 border-gray-300 hover:border-blue-500"
-                        src={User?.profilePicture }
+                        src={User?.profilePicture}
                         alt="User Profile"
                     />
-                    
+
                 </button>
                 {isOpenProfile && <UserProfile isOpen={isOpenProfile} onClose={() => setOpenProfile(false)} />}
                 <a href="#friends" title="Friends">

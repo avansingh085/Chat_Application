@@ -1,7 +1,7 @@
 import React, { useEffect,useState } from 'react';
 import { useSelector,useDispatch } from 'react-redux';
-import { setConversationId, setCurrChat } from '../Redux/userSlice';
-import { setLayout } from '../Redux/userSlice';
+import { setConversationId, setCurrChat } from '../../Redux/userSlice';
+import { setLayout } from '../../Redux/userSlice';
 function ContactBox({data:ConversationId,socket}) {
     const {Chat,User,ContactData ,Notifications,layout}=useSelector((state)=>state.Chat)
     

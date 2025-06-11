@@ -1,7 +1,7 @@
 import React, {useState,useEffect} from 'react';
 import { useSelector } from 'react-redux';
-import Profile from './Profile';
-import VideoCall from './VideoCall';
+import Profile from '../User/Profile';
+import VideoCall from '../VideoCall';
 function ChatHeader() {
   const {ConversationId,Chat,ContactData,User}=useSelector((state)=>state.Chat)
   const [showProfile,setShowProfile]=useState(false);

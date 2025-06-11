@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { apiPost } from "../utils/apiClient";
+import { apiPost } from "../../utils/apiClient";
 import { useSelector } from "react-redux";
 
 const CreateNewContact = ({ setShowCreateContact }) => {
@@ -17,28 +17,28 @@ const CreateNewContact = ({ setShowCreateContact }) => {
                 type: "group",
             }).then(() => {
                 setGroupName("");
-                setShowCreateContact(false); 
+                setShowCreateContact(false);
             }).catch((err) => console.error("Error creating group:", err));
         }
     };
 
     const createNewContact = (e) => {
         e.preventDefault();
-        if (userId.trim().length > 0 ) {
+        if (userId.trim().length > 0) {
             apiPost("/chat/conversation", {
                 participants: [User.userId, userId],
                 type: "personal",
             }).then(() => {
                 setUserId("");
                 setUserName("");
-                setShowCreateContact(false); 
+                setShowCreateContact(false);
             }).catch((err) => console.error("Error creating contact:", err));
         }
     };
 
     return (
         <div className="w-96 absolute top-20 left-1/2 transform -translate-x-1/2 bg-white border-2 border-gray-200 rounded-lg shadow-lg p-6 z-10 transition-all duration-300">
-          
+
             <button
                 onClick={() => setShowCreateContact(false)}
                 className="absolute top-2 right-2 p-1 rounded-full hover:bg-gray-200"
@@ -55,7 +55,7 @@ const CreateNewContact = ({ setShowCreateContact }) => {
             </button>
 
             <div className="grid gap-6">
-               
+
                 <div className="grid gap-3">
                     <h3 className="text-lg font-semibold text-gray-800">Create New Group</h3>
                     <form onSubmit={createNewGroup} className="grid gap-3">

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import apiClient from '../utils/apiClient';
+import apiClient from '../../utils/apiClient';
+
 
 const ProfilePopup = ({ isOpen, onClose, isGroup, profileUser }) => {
   const currentUser = { id: 1, name: 'John Doe' }; // Mocked for example

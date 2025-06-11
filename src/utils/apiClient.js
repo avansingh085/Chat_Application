@@ -1,14 +1,14 @@
 import axios from "axios";
-   const BASE_URL = "https://chat-application-backend-w648.onrender.com/api"; 
-//   const BASE_URL = "http://localhost:3001/api"; 
+  const BASE_URL = "https://chat-application-backend-w648.onrender.com/api"; 
+//  const BASE_URL = "http://localhost:3001/api";
 
-export const getToken = () => localStorage.getItem("token");
+export const getToken = () => localStorage.getItem("ChatsToken");
 
 export const setToken = (token) => {
     if (token) {
-        localStorage.setItem("token", token);
+        localStorage.setItem("ChatsToken", token);
     } else {
-        localStorage.removeItem("token");
+        localStorage.removeItem("ChatsToken");
     }
 };
 const apiClient = axios.create({
