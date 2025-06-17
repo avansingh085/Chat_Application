@@ -22,6 +22,7 @@ const initialState = {
     Contacts: {},
     ContactData: {},
     Notifications: {},
+    allUsers:[],
     layout:"both",
     loading:false,
     error:null,
@@ -50,6 +51,9 @@ const itemsSlice = createSlice({
             state.ConversationId = action.payload;
         }
         ,
+        setAllUsers:(state,action)=>{
+            state.allUsers=action.payload;
+        },
 
         setContactData: (state, action) => {
             state.ContactData = action.payload;
@@ -71,6 +75,7 @@ const itemsSlice = createSlice({
         state.Chat=action.payload.Chat;
         state.ContactData=action.payload.ContactData;
         state.User=action.payload.User;
+        state.allUsers=action.payload.allUsers;
         state.loading=false;
         state.isLogin=true;
 

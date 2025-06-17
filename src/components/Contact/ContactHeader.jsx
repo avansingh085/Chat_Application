@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import CreateNewContact from './createNewContact';
+import { useSelector } from 'react-redux';
 
 function ContactHeader() {
     const [showCreateContact, setShowCreateContact] = useState(false);
+     
 
     return (
         <div className="w-full border-y-2 bg-white shadow-sm">

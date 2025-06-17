@@ -9,7 +9,7 @@ const CreateNewContact = ({ setShowCreateContact }) => {
   const [groupName, setGroupName] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-
+  const { allUsers } = useSelector((state) => state.Chat);
   const { User } = useSelector((state) => state.Chat);
   const dispatch = useDispatch();
 
@@ -53,6 +53,17 @@ const CreateNewContact = ({ setShowCreateContact }) => {
       setLoading(false);
     }
   };
+
+  // Filter suggestions
+  const filteredSuggestions = userId
+    ? allUsers
+        ?.filter(
+          (u) =>
+            u?.userId !== User.userId && // exclude self
+            u?.userId?.toLowerCase().includes(userId.toLowerCase())
+        )
+        .slice(0, 5)
+    : [];
 
   return (
     <div className="w-96 absolute top-20 left-1/2 transform -translate-x-1/2 bg-white border-2 border-gray-200 rounded-lg shadow-lg p-6 z-10 transition-all duration-300">
@@ -100,7 +111,7 @@ const CreateNewContact = ({ setShowCreateContact }) => {
         </div>
 
         {/* Contact creation */}
-        <div className="grid gap-3">
+        <div className="grid gap-3 relative">
           <h3 className="text-lg font-semibold text-gray-800">
             Create New Contact
           </h3>
@@ -113,6 +124,20 @@ const CreateNewContact = ({ setShowCreateContact }) => {
               placeholder="Enter contact ID"
               disabled={loading}
             />
+            {/* Suggestions Dropdown */}
+            {filteredSuggestions.length > 0 && (
+              <ul className="absolute top-full mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md max-h-48 overflow-auto z-20">
+                {filteredSuggestions.map((u, i) => (
+                  <li
+                    key={i}
+                    onClick={() => setUserId(u.userId)}
+                    className="px-4 py-2 cursor-pointer hover:bg-blue-100 text-sm"
+                  >
+                    {u.userId}
+                  </li>
+                ))}
+              </ul>
+            )}
             <button
               type="submit"
               disabled={!userId.trim() || loading}
