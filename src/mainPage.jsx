@@ -35,9 +35,9 @@ function Main({ socket }) {
             <Routes>
                 {/* Public Routes */}
                 <Route path="/Login" element={
-                    <PublicRoute>
+                     <PublicRoute>
                         <Login />
-                    </PublicRoute>
+                     </PublicRoute>
                 } />
                 <Route path="/" element={
                     <PublicRoute>
