@@ -32,9 +32,9 @@ function ChatHeader() {
          
        },[Chat,ConversationId])
     return (
-        <div className="h-20 w-full border-y-2 bg-white flex items-center justify-between px-4 shadow-sm">
+        <div className="h-fit w-full border-y-2 bg-white flex items-center justify-between px-4 shadow-sm">
           
-            <div className=" grid text-sm md:text-lg md:flex items-center space-x-2">
+            <div className=" grid text-sm md:text-lg mt-3 md:flex items-center md:space-x-2 space-y-3">
                 <img
                     className="h-14 w-14 rounded-full border-2 border-gray-300"
                     src={ContactData[contactUserId]?.profilePicture||"https://via.placeholder.com/150"}
@@ -44,10 +44,10 @@ function ChatHeader() {
                 {
                   showProfile&&<Profile onClose={()=>{setShowProfile(false)}} isOpen={showProfile} isGroup={(Chat[ConversationId]?.Conversation?.type==="group")} profileUser={ContactData[contactUserId]} />
                 }
-                <div className="flex flex-col">
+                <div className="flex flex-col pb-3">
                   {
-                    Chat[ConversationId]?.Conversation?.type==="group" ?  <span className="text-xl font-semibold text-gray-800">{Chat[ConversationId]?.group?.groupName}</span>:
-                    <span className="text-xl font-semibold text-gray-800">{contactUserId}</span>
+                    Chat[ConversationId]?.Conversation?.type==="group" ?  <span className="text-xl font-semibold text-gray-800">{String(Chat[ConversationId]?.group?.groupName).slice(0,10)}</span>:
+                    <span className="text-xl font-semibold text-gray-800">{String(contactUserId).slice(0,10)}</span>
                   }
                     
                 </div>
