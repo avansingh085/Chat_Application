@@ -20,22 +20,22 @@ const AuthForm = () => {
   });
 
 
-    useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  const token = params.get('token');
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
 
-  if (token) {
-    localStorage.setItem('ChatsToken', token);
+    if (token) {
+      localStorage.setItem('ChatsToken', token);
 
-    // Clean the URL (remove the token from the query params)
-    const cleanUrl = window.location.origin + '/chat';
-    window.history.replaceState({}, document.title, cleanUrl);
+      // Clean the URL (remove the token from the query params)
+      const cleanUrl = window.location.origin + '/chat';
+      window.history.replaceState({}, document.title, cleanUrl);
 
-    // Navigate or load next page
-    dispatch(fetchUser())
-    navigate('/chat');
-  }
-}, [navigate]);
+      // Navigate or load next page
+      dispatch(fetchUser())
+      navigate('/chat');
+    }
+  }, [navigate]);
 
   const isLogin = formType === "login";
 
@@ -172,11 +172,11 @@ const AuthForm = () => {
             {isLogin ? "Sign Up" : "Login"}
           </button>
         </p>
-      <div className="w-full mt-4 grid items-start justify-center"> <a href="http://localhost:3001/auth/google"> <button class="flex items-center gap-2 border px-4 py-2 rounded shadow">
-  <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" width="20" />
-  <span>Continue with Google</span>
-</button></a>
-</div>
+        <div className="w-full mt-4 grid items-start justify-center"> <a href={`${import.meta.env.VITE_BACKEND_URL}/auth/google`}> <button class="flex items-center gap-2 border px-4 py-2 rounded shadow">
+          <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" width="20" />
+          <span>Continue with Google</span>
+        </button></a>
+        </div>
       </div>
     </div>
   );
