@@ -47,21 +47,23 @@ function Main({ socket }) {
 
                 {/* Protected Routes */}
                 <Route path="/chat" element={
-                    <ProtectedRoute>
+                    // <ProtectedRoute>
+                    <>
                         <Hamburger />
                         <Contact socket={socket} />
                         <Chat socket={socket} />
-                    </ProtectedRoute>
+                        </>
+                    // </ProtectedRoute>
                 } />
                 <Route path="/contact" element={
-                    <ProtectedRoute>
+                    // <ProtectedRoute>
                         <Contact socket={socket} />
-                    </ProtectedRoute>
+                    // </ProtectedRoute>
                 } />
                 <Route path="/chats" element={
-                    <ProtectedRoute>
+                    // <ProtectedRoute>
                         <Chat socket={socket} />
-                    </ProtectedRoute>
+                    // </ProtectedRoute>
                 } />
             </Routes>
 

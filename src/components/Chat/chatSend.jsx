@@ -112,7 +112,7 @@ function ChatSend({ socket }) {
     };
 
     return (
-        <div className="h-24 sticky bottom-0  w-full flex items-center border-t-2 bg-white px-4 shadow-sm" >
+        <div className="h-24 sticky bottom-0 w-screen left-0 inset-0   md:w-full flex items-center border-t-2 bg-white px-4 shadow-sm" >
 
             {uploadImageUrl && (
                 <div className="mb-4 flex items-center gap-4">
