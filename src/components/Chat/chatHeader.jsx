@@ -34,7 +34,7 @@ function ChatHeader() {
     return (
         <div className="h-20 w-full border-y-2 bg-white flex items-center justify-between px-4 shadow-sm">
           
-            <div className="flex items-center space-x-4">
+            <div className=" grid text-sm md:text-lg md:flex items-center space-x-2">
                 <img
                     className="h-14 w-14 rounded-full border-2 border-gray-300"
                     src={ContactData[contactUserId]?.profilePicture||"https://via.placeholder.com/150"}
@@ -53,7 +53,7 @@ function ChatHeader() {
                 </div>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 md:space-x-4">
                 {/* Video Call Button */}
                 <button
                     title="Video Call"
