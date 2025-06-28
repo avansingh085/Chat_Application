@@ -24,6 +24,16 @@ jobs:
       - name: Build the project
         run: npm run build
 
+      - name: Clean old dist folder on EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            rm -rf /home/ubuntu/ChatsApp/Chat_Application/dist/*
+            echo "Old dist folder cleared!"
+
       - name: Copy dist folder to EC2
         uses: appleboy/scp-action@master
         with:
