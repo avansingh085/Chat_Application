@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import apiClient from '../../utils/apiClient';
 
-
 const ProfilePopup = ({ isOpen, onClose, isGroup, profileUser }) => {
-  const currentUser = { id: 1, name: 'John Doe' }; // Mocked for example
+  const currentUser = { id: 1, name: 'John Doe' }; 
   const { User, Chat, ConversationId } = useSelector((state) => state.Chat);
   const [name, setName] = useState(profileUser?.userId || '');
   const [title, setTitle] = useState(profileUser?.status || '');
   const [image, setImage] = useState(profileUser?.profilePicture || '');
   const [joinLink, setJoinLink] = useState(null);
+  const [newMember, setNewMember] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -61,9 +61,34 @@ const ProfilePopup = ({ isOpen, onClose, isGroup, profileUser }) => {
     setTimeout(() => setSuccess(''), 2000);
   };
 
-  const addNewPerson = () => {
-    // Placeholder for adding a new person
-    console.log('Add new person clicked');
+  const addNewPerson = async () => {
+    if (!newMember.trim()) {
+      setError('Please enter a valid username or email');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const res = await apiClient.post(`/group/add/${ConversationId}`, {
+        newUser: newMember.trim()
+      });
+
+      if (res.data.success) {
+        setSuccess(`${newMember} added successfully!`);
+        setNewMember('');
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        setError(res.data.message || 'Failed to add member');
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Error adding member. Please try again.');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -138,12 +163,22 @@ const ProfilePopup = ({ isOpen, onClose, isGroup, profileUser }) => {
                 </div>
               )}
 
-              <button
-                onClick={addNewPerson}
-                className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors"
-              >
-                Add New Member
-              </button>
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  value={newMember}
+                  onChange={(e) => setNewMember(e.target.value)}
+                  placeholder="Enter username or email"
+                  className="flex-1 border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={addNewPerson}
+                  disabled={isLoading}
+                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:bg-green-400"
+                >
+                  Add
+                </button>
+              </div>
             </div>
           </div>
         ) : (

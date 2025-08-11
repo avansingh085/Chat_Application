@@ -8,10 +8,7 @@ function ChatHeader() {
   const [contactUserId,setContactUserId]=useState("");
   const [isVideoCall,setIsVideoCall]=useState(false);
  
-  const handleShowProfile=()=>{
 
-  }
- 
    useEffect(()=>{
           if(!Chat)
               return;
@@ -31,6 +28,8 @@ function ChatHeader() {
           }
          
        },[Chat,ConversationId])
+       
+      
     return (
         <div className="h-fit w-full border-y-2 bg-white flex items-center justify-between px-4 shadow-sm">
           
@@ -46,8 +45,8 @@ function ChatHeader() {
                 }
                 <div className="flex flex-col pb-3">
                   {
-                    Chat[ConversationId]?.Conversation?.type==="group" ?  <span className="text-xl font-semibold text-gray-800">{String(Chat[ConversationId]?.group?.groupName).slice(0,10)}</span>:
-                    <span className="text-xl font-semibold text-gray-800">{String(contactUserId).slice(0,10)}</span>
+                    Chat[ConversationId]?.Conversation?.type==="group" ?  <span className="text-xl font-semibold text-gray-800">{String(Chat[ConversationId]?.Group?.groupName||'').slice(0,10)}</span>:
+                    <span className="text-xl font-semibold text-gray-800">{String(contactUserId||'').slice(0,10)}</span>
                   }
                     
                 </div>

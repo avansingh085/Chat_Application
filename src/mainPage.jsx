@@ -48,7 +48,7 @@ function Main({ socket }) {
                 {/* Protected Routes */}
                 <Route path="/chat" element={
                      <ProtectedRoute>
-
+         
                         <Hamburger />
                         <Contact socket={socket} />
                         <Chat socket={socket} />

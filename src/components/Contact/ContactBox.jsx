@@ -59,7 +59,7 @@ function ContactBox({data:ConversationId,socket}) {
             <div className="flex-1 ml-4 grid gap-1">
                 <div className="text-xl font-medium text-gray-800 truncate">{}</div>
                 {Chat[ConversationId]?.Conversation?.type==="group" ? (
-                    <div className="text-sm text-gray-500 truncate">Group • {Chat[ConversationId]?.group?.groupName} members</div>
+                    <div className="text-sm text-gray-500 truncate">Group • {Chat[ConversationId]?.Group?.groupName} members</div>
                 ) : (
                     <div className="text-sm text-gray-500 truncate">{contactUserId}</div>
                 )}
