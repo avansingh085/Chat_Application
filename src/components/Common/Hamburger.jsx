@@ -2,12 +2,17 @@ import React, { useState } from 'react';
 import UserProfile from '../User/userProfile';
 import { useSelector, useDispatch } from 'react-redux';
 import { setLayout } from '../../Redux/userSlice';
+import { removeToken } from '../../utils/token';
 function Hamburger() {
     const [isOpenProfile, setOpenProfile] = useState(false);
     const { User } = useSelector((state) => state.Chat);
     const dispatch = useDispatch();
     const { layout } = useSelector((state) => state.Chat);
     const [isShow,setIsShow]=useState(false);
+    const handleLogout=()=>{
+        removeToken();
+        window.location('/login');
+    }
     return (
         <div className="w-fit z-50 fixed  h-screen border-x-2 bg-gray-100 flex flex-col justify-evenly  py-4">
 
@@ -62,11 +67,11 @@ function Hamburger() {
                     </svg>
                 </a>
 
-                <a href="#logout" title="Logout">
+                <button onClick={()=>handleLogout} title="Logout">
                     <svg className="h-8 w-8 text-gray-700 hover:text-red-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z" />
                     </svg>
-                </a>
+                </button>
             </div></>)}
             {
                 !isShow&&(<div className='text-xl font-bold  px-4 fixed  text-center rounded-full   text-black h-7 w-10' onClick={()=>setIsShow(!isShow)}>
