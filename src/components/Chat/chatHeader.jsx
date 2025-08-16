@@ -69,7 +69,7 @@ function ChatHeader() {
                     </svg>
                 </button>
                 {
-                    isVideoCall&&<VideoCall onClose={()=>{setIsVideoCall(false)}} isOpen={isVideoCall} roomId={contactUserId} />
+                    isVideoCall&&ConversationId&&<VideoCall onClose={()=>{setIsVideoCall(false)}} isOpen={isVideoCall} roomId={ConversationId} />
                 }
 
                 <button

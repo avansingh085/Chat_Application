@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 
 function ContactHeader() {
     const [showCreateContact, setShowCreateContact] = useState(false);
-     
+    const [search,setSearch]=useState("");
 
     return (
         <div className="w-full border-y-2 bg-white shadow-sm">
@@ -47,11 +47,11 @@ function ContactHeader() {
                     <input
                         className="w-full h-11 outline-none text-base md:text-lg px-2 bg-transparent placeholder-gray-500"
                         placeholder="Search chats..."
+                        onChange={(e)=>setSearch(e.target.value)}
                     />
                 </div>
             </div>
 
-            {/* Conditional Render for CreateNewContact */}
             {showCreateContact && (
                 <CreateNewContact setShowCreateContact={setShowCreateContact} />
             )}

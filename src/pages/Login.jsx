@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { apiPost } from "../utils/apiClient";
 import { fetchUser } from '../Redux/userSlice';
-import { FaSpinner } from "react-icons/fa";
+import { FiUser, FiMail, FiLock, FiLoader, FiArrowRight, FiCheck } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaGoogle } from "react-icons/fa";
 
 const AuthForm = () => {
   const dispatch = useDispatch();
@@ -11,6 +13,7 @@ const AuthForm = () => {
 
   const [formType, setFormType] = useState("signUp");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState({
     userId: "",
@@ -18,7 +21,7 @@ const AuthForm = () => {
     password: "",
     confirmPassword: "",
   });
-
+  const [passwordStrength, setPasswordStrength] = useState(0);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -26,16 +29,27 @@ const AuthForm = () => {
 
     if (token) {
       localStorage.setItem('ChatsToken', token);
-
-      // Clean the URL (remove the token from the query params)
       const cleanUrl = window.location.origin + '/chat';
       window.history.replaceState({}, document.title, cleanUrl);
-
-      // Navigate or load next page
       dispatch(fetchUser())
       navigate('/chat');
     }
-  }, [navigate]);
+  }, [navigate, dispatch]);
+
+  useEffect(() => {
+    // Calculate password strength
+    if (userData.password) {
+      let strength = 0;
+      if (userData.password.length > 5) strength += 1;
+      if (userData.password.length > 8) strength += 1;
+      if (/[A-Z]/.test(userData.password)) strength += 1;
+      if (/[0-9]/.test(userData.password)) strength += 1;
+      if (/[^A-Za-z0-9]/.test(userData.password)) strength += 1;
+      setPasswordStrength(strength);
+    } else {
+      setPasswordStrength(0);
+    }
+  }, [userData.password]);
 
   const isLogin = formType === "login";
 
@@ -47,13 +61,24 @@ const AuthForm = () => {
 
   const validateForm = () => {
     const { userId, email, password, confirmPassword } = userData;
+    
     if (!email || !password || (!isLogin && (!userId || !confirmPassword))) {
       setError("Please fill in all required fields.");
       return false;
     }
 
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setError("Please enter a valid email address.");
+      return false;
+    }
+
     if (!isLogin && password !== confirmPassword) {
       setError("Passwords do not match.");
+      return false;
+    }
+
+    if (!isLogin && passwordStrength < 3) {
+      setError("Password is too weak. Please use a stronger password.");
       return false;
     }
 
@@ -75,6 +100,8 @@ const AuthForm = () => {
       const data = await apiPost(endpoint, payload);
 
       localStorage.setItem("ChatsToken", data.token);
+      setSuccess(isLogin ? "Login successful!" : "Account created successfully!");
+      await new Promise(resolve => setTimeout(resolve, 1000));
       await dispatch(fetchUser());
       navigate("/chat");
     } catch (err) {
@@ -84,100 +111,224 @@ const AuthForm = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen w-full  flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/50">
-        <h2 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-green-400 tracking-tight">
-          {isLogin ? "Welcome Back" : "Create an Account"}
-        </h2>
+  const switchFormType = () => {
+    setFormType(isLogin ? "signUp" : "login");
+    setError("");
+    setSuccess("");
+    setUserData({ userId: "", email: "", password: "", confirmPassword: "" });
+  };
 
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm font-medium">
-            {error}
-          </div>
-        )}
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md bg-white/90 backdrop-blur-lg p-8 rounded-3xl shadow-xl border border-white/20"
+      >
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">
+            {isLogin ? "Welcome Back" : "Join Us Today"}
+          </h2>
+          <p className="text-gray-500">
+            {isLogin ? "Sign in to continue" : "Create your account to get started"}
+          </p>
+        </div>
+
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm font-medium border border-red-100"
+            >
+              {error}
+            </motion.div>
+          )}
+          {success && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="mb-4 p-3 bg-green-50 text-green-600 rounded-lg text-sm font-medium border border-green-100 flex items-center gap-2"
+            >
+              <FiCheck className="flex-shrink-0" />
+              {success}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
-            <input
-              type="text"
-              name="userId"
-              placeholder="Full Name"
-              value={userData.userId}
-              onChange={handleInputChange}
-              className="w-full h-12 px-4 border border-b-blue-600 outline-none rounded-md bg-white"
-              disabled={loading}
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                <FiUser />
+              </div>
+              <input
+                type="text"
+                name="userId"
+                placeholder="Full Name"
+                value={userData.userId}
+                onChange={handleInputChange}
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                disabled={loading}
+              />
+            </div>
           )}
 
-          <input
-            type="email"
-            name="email"
-            placeholder="Email Address"
-            value={userData.email}
-            onChange={handleInputChange}
-            className="w-full h-12 px-4 border border-b-blue-600 outline-none rounded-md bg-white"
-            disabled={loading}
-          />
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+              <FiMail />
+            </div>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={userData.email}
+              onChange={handleInputChange}
+              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+              disabled={loading}
+            />
+          </div>
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={userData.password}
-            onChange={handleInputChange}
-            className="w-full h-12 px-4 border border-b-blue-600 outline-none rounded-md bg-white"
-            disabled={loading}
-          />
-
-          {!isLogin && (
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+              <FiLock />
+            </div>
             <input
               type="password"
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              value={userData.confirmPassword}
+              name="password"
+              placeholder="Password"
+              value={userData.password}
               onChange={handleInputChange}
-              className="w-full h-12 px-4 border border-b-blue-600 outline-none rounded-md bg-white"
+              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
               disabled={loading}
             />
+            {!isLogin && userData.password && (
+              <div className="mt-2">
+                <div className="flex gap-1 h-1">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div
+                      key={i}
+                      className={`flex-1 rounded-full ${
+                        passwordStrength >= i
+                          ? i <= 2
+                            ? "bg-red-400"
+                            : i <= 4
+                            ? "bg-yellow-400"
+                            : "bg-green-500"
+                          : "bg-gray-200"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {passwordStrength < 3
+                    ? "Weak password"
+                    : passwordStrength < 5
+                    ? "Moderate password"
+                    : "Strong password"}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {!isLogin && (
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                <FiLock />
+              </div>
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                value={userData.confirmPassword}
+                onChange={handleInputChange}
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                disabled={loading}
+              />
+            </div>
           )}
 
-          <button
+          {isLogin && (
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => navigate('/forgot-password')}
+                className="text-sm text-blue-600 hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
+
+          <motion.button
             type="submit"
-            className="w-full h-12 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all font-semibold shadow-lg disabled:bg-gray-400 flex items-center justify-center"
+            whileTap={{ scale: 0.98 }}
             disabled={
               loading ||
               (isLogin
                 ? !userData.email || !userData.password
                 : !userData.userId || !userData.email || !userData.password || !userData.confirmPassword)
             }
+            className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all flex items-center justify-center gap-2 ${
+              loading
+                ? "bg-gray-400"
+                : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md"
+            }`}
           >
-            {loading ? <FaSpinner className="animate-spin mr-2" /> : null}
-            {isLogin ? "Login" : "Sign Up"}
-          </button>
+            {loading ? (
+              <>
+                <FiLoader className="animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                {isLogin ? "Sign In" : "Create Account"}
+                <FiArrowRight />
+              </>
+            )}
+          </motion.button>
         </form>
 
-        <p className="text-center text-sm mt-6 text-gray-700">
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">Or continue with</span>
+          </div>
+        </div>
+
+        <div className="grid gap-3">
+          <a 
+            href={`${import.meta.env.VITE_BACKEND_URL}/auth/google`} 
+            className="w-full"
+          >
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 border border-gray-200 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-all"
+            >
+              <FaGoogle className="text-red-500" />
+              Google
+            </motion.button>
+          </a>
+        </div>
+
+        <p className="text-center text-sm mt-6 text-gray-600">
           {isLogin ? "Don't have an account?" : "Already have an account?"}
           <button
             type="button"
-            onClick={() => {
-              setFormType(isLogin ? "signUp" : "login");
-              setError("");
-              setUserData({ userId: "", email: "", password: "", confirmPassword: "" });
-            }}
-            className="ml-1 text-blue-600 hover:underline font-semibold"
+            onClick={switchFormType}
+            className="ml-1.5 text-blue-600 hover:text-blue-700 font-medium hover:underline"
             disabled={loading}
           >
-            {isLogin ? "Sign Up" : "Login"}
+            {isLogin ? "Sign up" : "Sign in"}
           </button>
         </p>
-        <div className="w-full mt-4 grid items-start justify-center"> <a href={`${import.meta.env.VITE_BACKEND_URL}/auth/google`}> <button class="flex items-center gap-2 border px-4 py-2 rounded shadow">
-          <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" width="20" />
-          <span>Continue with Google</span>
-        </button></a>
-        </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
