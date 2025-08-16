@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import io from "socket.io-client";
 
-const VideoCall = ({ roomId, userName = "User", profilePic = "https://via.placeholder.com/40" }) => {
+const VideoCall = ({ roomId, userName = "User", profilePic = "https://via.placeholder.com/40" ,onClose}) => {
   const [muted, setMuted] = useState(false);
   const [videoOn, setVideoOn] = useState(true);
   const [isHidden, setIsHidden] = useState(false);
@@ -111,6 +111,7 @@ const VideoCall = ({ roomId, userName = "User", profilePic = "https://via.placeh
       localStreamRef.current.getTracks().forEach((track) => track.stop());
     }
     setCallStatus("ended");
+    onClose();
   };
 
   const handleAcceptCall = () => {

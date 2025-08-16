@@ -2,9 +2,9 @@ import { useState } from 'react';
 import CreateNewContact from './createNewContact';
 import { useSelector } from 'react-redux';
 
-function ContactHeader() {
+function ContactHeader({setSearch}) {
     const [showCreateContact, setShowCreateContact] = useState(false);
-    const [search,setSearch]=useState("");
+    
 
     return (
         <div className="w-full border-y-2 bg-white shadow-sm">

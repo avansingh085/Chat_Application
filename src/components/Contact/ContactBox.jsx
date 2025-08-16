@@ -2,7 +2,7 @@ import React, { useEffect,useState } from 'react';
 import { useSelector,useDispatch } from 'react-redux';
 import { setConversationId, setCurrChat } from '../../Redux/userSlice';
 import { setLayout } from '../../Redux/userSlice';
-function ContactBox({data:ConversationId,socket}) {
+function ContactBox({data:ConversationId,socket,search}) {
     const {Chat,User,ContactData ,Notifications,layout}=useSelector((state)=>state.Chat)
     
     const [contactUserId,setContactUserId]=useState("");
@@ -43,6 +43,8 @@ function ContactBox({data:ConversationId,socket}) {
         socket.emit("notification", NotificationKey);
 
      },[socket,User,contactUserId])
+     if(!String(Chat[ConversationId]?.Group?.groupName||'').includes(search)&&!String(contactUserId||'').includes(search))
+        return null;
     return (
         <div className="h-20 w-full bg-white hover:bg-gray-100 flex items-center px-4 py-2 m-1 rounded-lg transition-colors cursor-pointer" onClick={handleConversationId}>
            

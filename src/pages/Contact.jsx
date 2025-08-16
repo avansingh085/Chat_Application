@@ -10,7 +10,7 @@ function Contact({ socket }) {
   const { User } = useSelector((state) => state.Chat);
   const dispatch = useDispatch();
   const { Notifications } = useSelector((state) => state.Chat);
-
+  const [search,setSearch]=useState("");
   const { layout } = useSelector((state) => state.Chat);
   useEffect(() => {
     if (!socket) return;
@@ -41,11 +41,11 @@ function Contact({ socket }) {
 
   return (
     <div className={`max-h-screen ${layout === "both" ? "w-5/12" : "w-full"} `}>
-      <ContactHeader />
+      <ContactHeader setSearch={setSearch} />
       <div className=" overflow-y-scroll h-full pb-16">
         {
           User?.contacts?.map((data, key) => {
-            return <ContactBox data={data} socket={socket} />
+            return <ContactBox data={data} search={search} socket={socket} />
           })
         }
       </div >
