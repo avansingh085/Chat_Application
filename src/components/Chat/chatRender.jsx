@@ -22,6 +22,7 @@ function ChatRender() {
       console.log("Join link clicked:", joinLink);
       let result = await apiClient.post(joinLink,{id:User.userId});
       console.log("Join link result:", result.data);
+      window.location='/chat'
       if (result.data.success) {
         console.log("Join link result:", result.data);
       }
@@ -42,7 +43,7 @@ function ChatRender() {
             }`}
         >
           <div
-            className={`max-w-[70%] rounded-lg p-3 ${message.sender === User?.userId
+            className={`max-w-[70%] rounded-lg p-3 ${message.isExplicit ? 'bg-red-500 opacity-':''} ${!message.isExplicit&&message.sender === User?.userId
               ? 'bg-green-200 text-black'
               : 'bg-gray-200 text-black'
               }`}

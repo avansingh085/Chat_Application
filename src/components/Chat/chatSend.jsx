@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import apiClient from "../../utils/apiClient";
 import { setChat } from "../../Redux/userSlice";
+import axios from "axios";
 
 function ChatSend({ socket }) {
     // console.log(socket, "connection")
@@ -38,7 +39,23 @@ function ChatSend({ socket }) {
     };
 
 
+   const handleCorrectMessage=async ()=>{
 
+      try{
+       const res=await axios.post(`${import.meta.env.VITE_GEMINI_BACKEND}/generate`,{
+            prompt:`->${message}<- inside arrow message  correct speling of message not give extra text only correct message make sure message meaning full `
+            ,
+            type:false
+        })
+       console.log(res);
+        setMessage(res.data.text);
+
+      }
+      catch(err){
+        console.log(err)
+
+      }
+   }
 
     useEffect(() => {
         if (!socket) return;
@@ -80,19 +97,29 @@ function ChatSend({ socket }) {
         }
     }, [message]);
 
-    const sendMessage = () => {
+    const sendMessage = async () => {
         console.log(socket, ConversationId, message, uploadImageUrl)
         if (!socket || !ConversationId || !(message.trim() || uploadImageUrl)) return;
-
+     
         const newMessage = {
             sender: User.userId,
             message: message.trim(),
+
             conversationId: ConversationId,
             timestamp: new Date().toISOString(),
             imageUrl: uploadImageUrl,
         };
-        console.log(newMessage, "HELLOW")
+        
         try {
+           const messageIsExiplicit=await axios.post(`${import.meta.env.VITE_GEMINI_BACKEND}/generate`,{
+                prompt:`->${message}<-   inside arrow message explisit harmfull content or sexual content then give output one other wise 0 no extra text output`  ,
+                type:true
+            })
+
+            
+            console.log(messageIsExiplicit,"message information check")
+            if(messageIsExiplicit?.data?.data)
+            newMessage['isExplicit']=true;
             socket.emit("message", newMessage);
             const updatedChat = [...(Chat[ConversationId]?.Message || []), newMessage];
             dispatch(
@@ -156,7 +183,7 @@ function ChatSend({ socket }) {
                     }
                 }}
             />
-
+           <button className="  bg-blue-500 h-9 w-9 text-white rounded-full" onClick={handleCorrectMessage}>AI</button>
             <button
                 onClick={sendMessage}
                 disabled={
