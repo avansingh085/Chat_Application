@@ -110,7 +110,11 @@ const ProfilePopup = ({ isOpen, onClose, isGroup, profileUser }) => {
         {isGroup ? (
           <div className="text-center">
             <img
-              src={Chat[ConversationId]?.Group?.groupPicture || '/default-group.png'}
+              src={Chat[ConversationId]?.Group?.groupPicture || '/profile.jpeg'}
+              onError={(e)=>{
+                e.target.src='/profile.jpeg';
+                e.target.error=null
+              }}
               alt="Group"
               className="w-20 h-20 rounded-full mx-auto border-4 border-blue-100 shadow-md object-cover"
             />

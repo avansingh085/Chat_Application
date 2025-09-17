@@ -49,7 +49,11 @@ function Hamburger() {
                 <button title="Profile" onClick={() => setOpenProfile(prev => !prev)}>
                     <img
                         className="h-12 w-12 rounded-full border-2 border-gray-300 hover:border-blue-500"
-                        src={User?.profilePicture}
+                        src={User?.profilePicture||'/profile.jpeg'}
+                        onError={(e)=>{
+                            e.target.src='/profile.jpeg';
+                            e.target.error=null;
+                        }}
                         alt="User Profile"
                     />
 

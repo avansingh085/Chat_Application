@@ -40,9 +40,9 @@ const ProfilePopup = ({ onClose, onSave }) => {
         const response = await apiClient.post('/upload/file', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
-       await apiClient.post('/user/update-profile',{userId:User._id,status:User.status,profilePicture:response.data.url});
+        await apiClient.post('/user/update-profile', { userId: User._id, status: User.status, profilePicture: response.data.url });
         if (response.data.success) {
-         
+
           dispatch(setUser({ ...User, profilePicture: response.data.url }));
 
           handleInputChange('profilePicture', response.data.url);
@@ -101,7 +101,12 @@ const ProfilePopup = ({ onClose, onSave }) => {
           <div className="flex items-center gap-4">
             <div className="relative">
               <img
-                src={formData.profilePicture || 'default-avatar.jpg'}
+                src={formData.profilePicture || '/profile.jpeg'}
+
+                onError={(e) => {
+                  e.target.src = '/profile.jpeg';
+                  e.target.error = null;
+                }}
                 alt="Profile"
                 className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-lg"
               />

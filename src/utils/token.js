@@ -1,11 +1,11 @@
 export const setToken=(token=null)=>{
-     localStorage.setItem(token);
+     localStorage.setItem('ChatsToken',token);
 }
 
-export const getToken=()=>{
-  return localStorage.getItem('ChatsToken');
+export const getToken=async ()=>{
+  return await localStorage.getItem('ChatsToken');
 }
 
-export const removeToken=()=>{
-    localStorage.removeItem('ChatsToken');
+export const removeToken=async ()=>{
+   await  localStorage.removeItem('ChatsToken');
 }

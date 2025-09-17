@@ -6,6 +6,7 @@ import Login from './pages/Login.jsx';
 import io from 'socket.io-client';
 import { fetchUser } from './Redux/userSlice.jsx';
 import DotLoader from './components/Common/Loader.jsx';
+import { generateKeyPair } from './utils/useEncryption.js';
 
 function App() {
   const dispatch = useDispatch();
@@ -19,8 +20,7 @@ function App() {
     dispatch(fetchUser());
   }, [dispatch]);
   
-  // Initialize socket connection after user is available
- 
+
   useEffect(() => {
     if (!User?.userId || socket) return;
 
