@@ -20,7 +20,7 @@ function ChatRender() {
     try {
       const joinLink = e.currentTarget.value;
       console.log("Join link clicked:", joinLink);
-      let result = await apiClient.get(joinLink);
+      let result = await apiClient.post(joinLink,{id:User.userId});
       console.log("Join link result:", result.data);
       if (result.data.success) {
         console.log("Join link result:", result.data);
@@ -71,7 +71,7 @@ function ChatRender() {
               );
             })() : (
               (() => {
-                const joinLinkRegex = /http:\/\/localhost:3001\/group\/[a-zA-Z0-9-]+\/[a-zA-Z0-9]+\/joinLink/g;
+                const joinLinkRegex = /http:\/\/localhost:3001\/api\/group\/[a-zA-Z0-9-]+\/[a-zA-Z0-9]+\/joinLink/g;
                 const genericLinkRegex = /(https?:\/\/[^\s]+)/g;
 
                 const parts = [];

@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import apiClient from '../../utils/apiClient';
 
 const ProfilePopup = ({ isOpen, onClose, isGroup, profileUser }) => {
-  const currentUser = { id: 1, name: 'John Doe' }; 
+  const currentUser = { id: 1, name: 'John Doe' };
   const { User, Chat, ConversationId } = useSelector((state) => state.Chat);
   const [name, setName] = useState(profileUser?.userId || '');
   const [title, setTitle] = useState(profileUser?.status || '');
@@ -39,7 +39,7 @@ const ProfilePopup = ({ isOpen, onClose, isGroup, profileUser }) => {
     setIsLoading(true);
     setError('');
     try {
-      const result = await apiClient.get(`/group/${ConversationId}/link`);
+      const result = await apiClient.get(`/group/generate/${ConversationId}`);
       if (result.data.success) {
         setJoinLink(result.data.joinLink);
         setSuccess('Link generated successfully!');
@@ -111,9 +111,9 @@ const ProfilePopup = ({ isOpen, onClose, isGroup, profileUser }) => {
           <div className="text-center">
             <img
               src={Chat[ConversationId]?.Group?.groupPicture || '/profile.jpeg'}
-              onError={(e)=>{
-                e.target.src='/profile.jpeg';
-                e.target.error=null
+              onError={(e) => {
+                e.target.src = '/profile.jpeg';
+                e.target.error = null
               }}
               alt="Group"
               className="w-20 h-20 rounded-full mx-auto border-4 border-blue-100 shadow-md object-cover"
