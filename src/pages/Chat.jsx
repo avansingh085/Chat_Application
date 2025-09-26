@@ -12,7 +12,7 @@ function Chat({ socket }) {
         return null;
     return (
         <div className="w-full h-full overflow-hidden border-x-2 bg-white">
-            <ChatHeader />
+            <ChatHeader socket={socket}/>
             <ChatRender socket={socket} />
             <ChatSend socket={socket} />
         </div>

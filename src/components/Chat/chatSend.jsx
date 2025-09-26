@@ -29,7 +29,6 @@ function ChatSend({ socket }) {
 
                 if (response.data.success) {
                     setUploadImageUrl(response.data?.url);
-
                 }
             } catch (err) {
                 console.log(err)
@@ -111,15 +110,15 @@ function ChatSend({ socket }) {
         };
         
         try {
-           const messageIsExiplicit=await axios.post(`${import.meta.env.VITE_GEMINI_BACKEND}/generate`,{
-                prompt:`->${message}<-   inside arrow message explisit harmfull content or sexual content then give output one other wise 0 no extra text output`  ,
-                type:true
-            })
+        //    const messageIsExiplicit=await axios.post(`${import.meta.env.VITE_GEMINI_BACKEND}/generate`,{
+        //         prompt:`->${message}<-   inside arrow message explisit harmfull content or sexual content then give output one other wise 0 no extra text output`  ,
+        //         type:true
+        //     })
 
             
-            console.log(messageIsExiplicit,"message information check")
-            if(messageIsExiplicit?.data?.data)
-            newMessage['isExplicit']=true;
+            // console.log(messageIsExiplicit,"message information check")
+            // if(messageIsExiplicit?.data?.data)
+            // newMessage['isExplicit']=true;
             socket.emit("message", newMessage);
             const updatedChat = [...(Chat[ConversationId]?.Message || []), newMessage];
             dispatch(

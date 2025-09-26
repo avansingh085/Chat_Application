@@ -2,11 +2,51 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Profile from '../User/Profile';
 import VideoCall from '../VideoCall';
-function ChatHeader() {
+import { Error, Success } from '../Common/toast';
+function ChatHeader({socket=null}) {
     const { ConversationId, Chat, ContactData, User } = useSelector((state) => state.Chat)
     const [showProfile, setShowProfile] = useState(false);
     const [contactUserId, setContactUserId] = useState("");
     const [isVideoCall, setIsVideoCall] = useState(false);
+    const [conId,setConId]=useState('');
+    useEffect(()=>{
+        if(!socket)
+        {
+            Error('Socket not connected!')
+            return;
+        }
+        socket.on('offer-video-call',({roomId,userName})=>{
+           // window.alert('hellow------------');
+            console.log("LLLLLLLLLvideo-call")
+               setConId(roomId);
+               setIsVideoCall(true);
+        })
+
+        socket.on('end-video-call',({roomId,userName})=>{
+            setIsVideoCall(false);
+            setConId('');
+            
+        })
+
+        return ()=>{
+            socket.off('end-video-call');
+            socket.off('offer-video-call');
+        }
+
+    },[])
+
+
+    function sendVideoCallRequest(){
+        if(!socket)
+        {
+        return;
+        }
+        setConId(ConversationId);
+        setIsVideoCall(true);
+        socket.emit('offer-video-call',{roomId:ConversationId,userName:User.userId})
+
+    }
+    
 
 
     useEffect(() => {
@@ -60,7 +100,7 @@ function ChatHeader() {
                 <button
                     title="Video Call"
                     className="p-2 rounded-full hover:bg-gray-200 transition-colors"
-                    onClick={() => { setIsVideoCall(!isVideoCall) }}
+                    onClick={() => { setIsVideoCall(!isVideoCall);sendVideoCallRequest(); }}
                 >
                     <svg
                         className="h-8 w-8 text-gray-600 hover:text-blue-500"
@@ -72,7 +112,7 @@ function ChatHeader() {
                     </svg>
                 </button>
                 {
-                    isVideoCall && ConversationId && <VideoCall onClose={() => { setIsVideoCall(false) }} isOpen={isVideoCall} roomId={ConversationId} />
+                    isVideoCall && conId && <VideoCall onClose={() => { if(socket){socket.emit('end-video-call',{roomId:conId,userName:User?.userId})} }} isOpen={isVideoCall} roomId={conId}   />
                 }
 
                 <button

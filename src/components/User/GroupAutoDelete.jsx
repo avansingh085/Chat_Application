@@ -35,7 +35,8 @@ export default function GroupAutoDelete({ conversationId }) {
         conversationId,
         date,
       });
-      alert("Auto delete date updated successfully!");
+      setError('');
+      //alert("Auto delete date updated successfully!");
     } catch (err) {
       console.error(err);
       setError("Failed to update date");
