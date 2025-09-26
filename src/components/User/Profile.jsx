@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import apiClient from '../../utils/apiClient';
+import GroupAutoDelete from './GroupAutoDelete';
 
 const ProfilePopup = ({ isOpen, onClose, isGroup, profileUser }) => {
   const currentUser = { id: 1, name: 'John Doe' };
@@ -184,6 +185,8 @@ const ProfilePopup = ({ isOpen, onClose, isGroup, profileUser }) => {
                 </button>
               </div>
             </div>
+
+           <GroupAutoDelete conversationId={ConversationId}/>
           </div>
         ) : (
           <div className="text-center">

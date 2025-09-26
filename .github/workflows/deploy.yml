@@ -30,9 +30,9 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          # ✅ Only copy the contents of dist, NOT the dist folder itself
+          #  Only copy the contents of dist, NOT the dist folder itself
           source: "dist/*"
-          # ✅ Copy to the parent Chat_Application folder to avoid nested dist/dist
+          #  Copy to the parent Chat_Application folder to avoid nested dist/dist
           target: "/home/ubuntu/ChatsApp/Chat_Application"
 
       - name: Fix permissions & reload NGINX on EC2

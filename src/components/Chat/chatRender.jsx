@@ -18,8 +18,9 @@ function ChatRender() {
   const handleJoinLinkClick = async (e) => {
     e.preventDefault();
     try {
-      const joinLink = e.currentTarget.value;
+      let joinLink = e.currentTarget.value;
       console.log("Join link clicked:", joinLink);
+      joinLink = joinLink.replace("http://localhost:3001", import.meta.env.VITE_BACKEND_URL);
       let result = await apiClient.post(joinLink,{id:User.userId});
       console.log("Join link result:", result.data);
       window.location='/chat'
