@@ -4,20 +4,26 @@ import Profile from '../User/Profile';
 import VideoCall from '../VideoCall';
 import { Error, Success } from '../Common/toast';
 function ChatHeader({socket=null}) {
-    const { ConversationId, Chat, ContactData, User } = useSelector((state) => state.Chat)
+    
+    const { ConversationId, Chat, ContactData, User } = useSelector((state) => state.Chat);
+
     const [showProfile, setShowProfile] = useState(false);
+
     const [contactUserId, setContactUserId] = useState("");
+
     const [isVideoCall, setIsVideoCall] = useState(false);
+
     const [conId,setConId]=useState('');
+
     useEffect(()=>{
         if(!socket)
         {
-            Error('Socket not connected!')
+           // Error('Socket not connected!')
             return;
         }
         socket.on('offer-video-call',({roomId,userName})=>{
            // window.alert('hellow------------');
-            console.log("LLLLLLLLLvideo-call")
+           // console.log("LLLLLLLLLvideo-call")
                setConId(roomId);
                setIsVideoCall(true);
         })
