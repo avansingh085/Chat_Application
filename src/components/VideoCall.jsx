@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import io from "socket.io-client";
+import Ringtone from "./RingTon";
 
-const VideoCall = ({ roomId, userName = "User", profilePic = "https://via.placeholder.com/40" ,onClose}) => {
+const VideoCall = ({ roomId,isInComming ,setIsInComming,userName = "User", profilePic = "https://via.placeholder.com/40" ,onClose}) => {
   const [muted, setMuted] = useState(false);
   const [videoOn, setVideoOn] = useState(true);
   const [isHidden, setIsHidden] = useState(false);
-  const [callStatus, setCallStatus] = useState("initiating"); 
+  const [callStatus, setCallStatus] = useState("ringing"); 
 
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
@@ -18,7 +19,7 @@ const VideoCall = ({ roomId, userName = "User", profilePic = "https://via.placeh
     const initializeConnection = async () => {
       try {
         socketRef.current = io(import.meta.env.VITE_VIDEO_CALL_BACKEND_URL);
-        setCallStatus("ringing");
+        
 
         const stream = await navigator.mediaDevices.getUserMedia({
           video: true,
@@ -110,16 +111,19 @@ const VideoCall = ({ roomId, userName = "User", profilePic = "https://via.placeh
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach((track) => track.stop());
     }
+    setIsInComming(false);
     setCallStatus("ended");
     onClose();
   };
 
   const handleAcceptCall = () => {
+    setIsInComming(false);
     setCallStatus("connected");
   };
 
   return (
     <AnimatePresence>
+      <Ringtone isRing={isInComming}/>
       {!isHidden && (
         <motion.div
           className="fixed top-4 right-4 w-80 bg-gray-800 rounded-xl shadow-2xl pointer-events-auto overflow-hidden"
@@ -155,7 +159,7 @@ const VideoCall = ({ roomId, userName = "User", profilePic = "https://via.placeh
             </button>
           </div>
 
-          <div className="relative bg-black">
+          <div className={`relative bg-black ` }>
             <motion.video
               ref={remoteVideoRef}
               autoPlay
@@ -216,6 +220,7 @@ const VideoCall = ({ roomId, userName = "User", profilePic = "https://via.placeh
           </div>
         </motion.div>
       )}
+      
       {isHidden && (
         <motion.div
           className="fixed top-4 right-4 bg-gray-800 rounded-full p-2 pointer-events-auto"

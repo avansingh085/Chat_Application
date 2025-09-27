@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import Profile from '../User/Profile';
 import VideoCall from '../VideoCall';
 import { Error, Success } from '../Common/toast';
+import Ringtone from '../RingTon';
 function ChatHeader({socket=null}) {
 
     const { ConversationId, Chat, ContactData, User } = useSelector((state) => state.Chat);
@@ -12,6 +13,8 @@ function ChatHeader({socket=null}) {
     const [contactUserId, setContactUserId] = useState("");
 
     const [isVideoCall, setIsVideoCall] = useState(false);
+
+    const [isInComming,setIsInComming]=useState(false);
 
     const [conId,setConId]=useState('');
 
@@ -23,7 +26,8 @@ function ChatHeader({socket=null}) {
         }
         socket.on('offer-video-call',({roomId,userName})=>{
            // window.alert('hello------------');
-           // console.log("LLLLLLLLLvideo-call")
+         console.log("LLLLLLLLLvideo-call-------------")
+           setIsInComming(true);
                setConId(roomId);
                setIsVideoCall(true);
         })
@@ -31,6 +35,7 @@ function ChatHeader({socket=null}) {
         socket.on('end-video-call',({roomId,userName})=>{
             setIsVideoCall(false);
             setConId('');
+            setIsInComming(false);
             
         })
 
@@ -89,6 +94,7 @@ function ChatHeader({socket=null}) {
                     alt="User Avatar"
                     onClick={() => { setShowProfile(!showProfile) }}
                 />
+               
                 {
                     showProfile && <Profile onClose={() => { setShowProfile(false) }} isOpen={showProfile} isGroup={(Chat[ConversationId]?.Conversation?.type === "group")} profileUser={ContactData[contactUserId]} />
                 }
@@ -118,7 +124,7 @@ function ChatHeader({socket=null}) {
                     </svg>
                 </button>
                 {
-                    isVideoCall && conId && <VideoCall onClose={() => { if(socket){socket.emit('end-video-call',{roomId:conId,userName:User?.userId})} setIsVideoCall(false) }} isOpen={isVideoCall} roomId={conId}   />
+                    isVideoCall && conId && <VideoCall isInComming={isInComming} setIsInComming={setIsInComming} userName={User.userId} onClose={() => { if(socket){socket.emit('end-video-call',{roomId:conId,userName:User?.userId})} setIsVideoCall(false) }} isOpen={isVideoCall} roomId={conId}   />
                 }
 
                 <button
