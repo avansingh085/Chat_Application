@@ -26,7 +26,7 @@ export const { setSocket, disconnectSocket } = socketSlice.actions;
 
 export const connectToSocket = (userId) => (dispatch, getState) => {
   if (!userId || socket) return;
-  const SOCKET_URL ="http://localhost:3001";
+  const SOCKET_URL =import.meta.env.VITE_BACKEND_URL;
 
   socket = io(SOCKET_URL, {
     transports: ['websocket'],
@@ -34,16 +34,16 @@ export const connectToSocket = (userId) => (dispatch, getState) => {
   });
 
   socket.on('connect', () => {
-    console.log('✅ Connected to socket:', socket.id);
+    console.log(' Connected to socket:', socket.id);
     dispatch(setSocket(socket));
   });
 
   socket.on('connect_error', (err) => {
-    console.error('❌ Socket connection error:', err.message);
+    console.error(' Socket connection error:', err.message);
   });
 
   socket.on('disconnect', (reason) => {
-    console.warn('⚠️ Socket disconnected:', reason);
+    console.warn(' Socket disconnected:', reason);
     dispatch(disconnectSocket());
   });
 };

@@ -17,7 +17,7 @@ const VideoCall = ({ roomId, userName = "User", profilePic = "https://via.placeh
   useEffect(() => {
     const initializeConnection = async () => {
       try {
-        socketRef.current = io("https://videocallbackend-pqmh.onrender.com");
+        socketRef.current = io(import.meta.env.VITE_VIDEO_CALL_BACKEND_URL);
         setCallStatus("ringing");
 
         const stream = await navigator.mediaDevices.getUserMedia({

@@ -19,12 +19,12 @@ function ChatRender() {
     e.preventDefault();
     try {
       let joinLink = e.currentTarget.value;
-    //  console.log("Join link clicked:", joinLink);
+      //  console.log("Join link clicked:", joinLink);
       joinLink = joinLink.replace("http://localhost:3001", import.meta.env.VITE_BACKEND_URL);
       //console.log(joinLink,">>>>>>>>>>>>>>>>>>>>>>>>")
-      let result = await apiClient.post(joinLink,{id:User.userId});
+      let result = await apiClient.post(joinLink, { id: User.userId });
       //console.log("Join link result:", result.data);
-     window.location='/chat'
+      window.location = '/chat'
       if (result.data.success) {
         console.log("Join link result:", result.data);
       }
@@ -45,11 +45,12 @@ function ChatRender() {
             }`}
         >
           <div
-            className={`max-w-[70%] rounded-lg p-3 ${message.isExplicit ? 'bg-red-500 opacity-':''} ${!message.isExplicit&&message.sender === User?.userId
+            className={`max-w-[70%] rounded-lg p-3 ${message.isExplicit ? 'bg-red-500 opacity-' : ''} ${!message.isExplicit && message.sender === User?.userId
               ? 'bg-green-200 text-black'
               : 'bg-gray-200 text-black'
               }`}
           >
+            <div className={message.sender === User?.userId ? 'text-pink-700' : 'text-green-700'}>~{message.sender}</div>
             {message?.imageUrl ? (() => {
               const fileUrl = message.imageUrl;
               const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(fileUrl);
