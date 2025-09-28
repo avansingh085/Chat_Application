@@ -1,23 +1,30 @@
+# Dependency directories
+node_modules/
+
+# Environment files
+.env
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-.env
+# Build output (if using Babel/TypeScript or custom build)
+dist/
+build/
+cert/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# OS-specific files
 .DS_Store
+
+# Local environment files
+*.local
+
+# Editor/IDE settings
+.vscode/
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
