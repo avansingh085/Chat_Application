@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/Common/ProtectRoute";
 import PublicRoute from "./components/Common/PublicRoute";
+import NotFoundPage from "./pages/PageNotFound";
 
 function Main({ socket }) {
     const dispatch = useDispatch();
@@ -65,6 +66,7 @@ function Main({ socket }) {
                         <Chat socket={socket} />
                      </ProtectedRoute>
                 } />
+                <Route path="*" element={<NotFoundPage/>}/>
             </Routes>
 
         </div>
