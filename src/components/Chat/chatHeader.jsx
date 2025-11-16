@@ -40,10 +40,10 @@ function ChatHeader({socket=null}) {
             
         })
 
-        return ()=>{
-            socket.off('end-video-call');
-            socket.off('offer-video-call');
-        }
+        // return ()=>{
+        //     socket.off('end-video-call');
+        //     socket.off('offer-video-call');
+        // }
 
     },[])
 
