@@ -32,7 +32,7 @@ const VideoPlayer = React.memo(({ stream, isLocal, socketId }) => {
   );
 });
 
-const GroupVideoCall = ({ initialRoomId, onClose }) => {
+const GroupVideoCall = ({ initialRoomId,setIsInComming, onClose }) => {
   // --- State ---
   const [roomId, setRoomId] = useState(initialRoomId || "");
   const [inCall, setInCall] = useState(false);
@@ -232,6 +232,7 @@ const GroupVideoCall = ({ initialRoomId, onClose }) => {
   // --- Button Click Handlers ---
   const handleJoin = () => {
     if (roomId.trim()) {
+      setIsInComming(false);
       setInCall(true);
     }
   };
@@ -257,7 +258,7 @@ const GroupVideoCall = ({ initialRoomId, onClose }) => {
   // --- Render ---
   if (!inCall) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 ">
         <div className="w-full max-w-sm rounded-xl bg-gray-800 p-6 shadow-lg">
           <h1 className="mb-4 text-center text-2xl font-bold text-white">
             Join Group Call
