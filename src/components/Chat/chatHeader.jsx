@@ -49,7 +49,7 @@ function ChatHeader({socket=null}) {
         //     socket.off('offer-video-call');
         // }
 
-    },[])
+    },[socket])
 
 
     function sendVideoCallRequest(){
