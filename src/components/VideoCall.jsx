@@ -25,7 +25,7 @@ const VideoPlayer = React.memo(({ stream, isLocal, socketId }) => {
         muted={isLocal} // Mute local video to prevent feedback
         className="h-full w-full object-cover"
       />
-      <div className="absolute bottom-0 left-0 rounded-tr-lg bg-black/50 px-2 py-1 text-xs font-medium text-white">
+      <div className="absolute bottom-0 left-0 rounded-tr-lg bg-white/50 px-2 py-1 text-xs font-medium text-white">
         {label}
       </div>
     </div>
@@ -258,8 +258,8 @@ const GroupVideoCall = ({ initialRoomId,setIsInComming, onClose }) => {
   // --- Render ---
   if (!inCall) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 ">
-        <div className="w-full max-w-sm rounded-xl bg-gray-800 p-6 shadow-lg">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/70 ">
+        <div className="w-full max-w-sm rounded-xl bg-white-800 p-6 shadow-lg">
           <h1 className="mb-4 text-center text-2xl font-bold text-white">
             Join Group Call
           </h1>
