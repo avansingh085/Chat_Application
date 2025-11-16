@@ -1,244 +1,342 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React,{ useEffect, useRef, useState, useCallback } from "react";
 import io from "socket.io-client";
-import Ringtone from "./RingTon";
 
-const VideoCall = ({ roomId,isInComming ,setIsInComming,userName = "User", profilePic = "https://via.placeholder.com/40" ,onClose}) => {
-  const [muted, setMuted] = useState(false);
-  const [videoOn, setVideoOn] = useState(true);
-  const [isHidden, setIsHidden] = useState(false);
-  const [callStatus, setCallStatus] = useState("ringing"); 
+const SERVER_URL = import.meta.env.REACT_APP_VIDEO_CALL_BACKEND_URL || "http://localhost:5000";
 
-  const localVideoRef = useRef(null);
-  const remoteVideoRef = useRef(null);
-  const pcRef = useRef(null);
-  const socketRef = useRef(null);
-  const localStreamRef = useRef(null);
+const ICE_SERVERS = [{ urls: "stun:stun.l.google.com:19302" }];
+
+const VideoPlayer = React.memo(({ stream, isLocal, socketId }) => {
+  const videoRef = useRef(null);
 
   useEffect(() => {
-    const initializeConnection = async () => {
+    if (videoRef.current && stream) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [stream]);
+
+  const label = isLocal ? `You (${socketId || 'local'})` : `User (${socketId})`;
+
+  return (
+    <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black shadow-lg">
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted={isLocal} // Mute local video to prevent feedback
+        className="h-full w-full object-cover"
+      />
+      <div className="absolute bottom-0 left-0 rounded-tr-lg bg-black/50 px-2 py-1 text-xs font-medium text-white">
+        {label}
+      </div>
+    </div>
+  );
+});
+
+const GroupVideoCall = ({ initialRoomId, onClose }) => {
+  // --- State ---
+  const [roomId, setRoomId] = useState(initialRoomId || "");
+  const [inCall, setInCall] = useState(false);
+  const [mySocketId, setMySocketId] = useState("");
+  const [isMuted, setIsMuted] = useState(false);
+  const [isVideoOn, setIsVideoOn] = useState(true);
+  
+  const [streams, setStreams] = useState([]); 
+  const socketRef = useRef(null);
+  const localStreamRef = useRef(null);
+  
+  const peerConnectionsRef = useRef(new Map());
+
+  // --- Helper: Close a single peer connection ---
+  const closePeerConnection = useCallback((socketId) => {
+    const pc = peerConnectionsRef.current.get(socketId);
+    if (pc) {
+      pc.close();
+      peerConnectionsRef.current.delete(socketId);
+    }
+  }, []);
+
+  // --- Main Hang-up/Cleanup Function ---
+  const handleEndCall = useCallback(() => {
+    console.log("Ending call...");
+    
+    // 1. Close all peer connections
+    peerConnectionsRef.current.forEach((pc) => pc.close());
+    peerConnectionsRef.current.clear();
+
+    // 2. Stop local media tracks
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach((track) => track.stop());
+      localStreamRef.current = null;
+    }
+
+    // 3. Disconnect from socket
+    if (socketRef.current) {
+      socketRef.current.emit("hang-up"); // Tell server we are leaving
+      socketRef.current.disconnect();
+      socketRef.current = null;
+    }
+
+    // 4. Reset state
+    setStreams([]);
+    setInCall(false);
+    setMySocketId("");
+    setIsMuted(false);
+    setIsVideoOn(true);
+    
+    if (onClose) onClose();
+  }, [onClose]);
+
+  // --- Main Call Logic ---
+  useEffect(() => {
+    // This effect runs when `inCall` becomes true
+    if (!inCall || !roomId) return;
+
+    let isMounted = true; // Flag to prevent state updates on unmounted component
+
+    // Helper to create a new Peer Connection
+    const createPeerConnection = (targetSocketId, isOfferor) => {
+      const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+      
+      // Add local tracks to the connection
+      localStreamRef.current.getTracks().forEach((track) => {
+        pc.addTrack(track, localStreamRef.current);
+      });
+
+      // Handle incoming tracks from the remote peer
+      pc.ontrack = (event) => {
+        if (!isMounted) return;
+        console.log(`Received track from ${targetSocketId}`);
+        // Add the remote stream to our state
+        setStreams((prev) => [
+          ...prev.filter((s) => s.id !== targetSocketId),
+          { id: targetSocketId, stream: event.streams[0], isLocal: false },
+        ]);
+      };
+
+      // Handle ICE candidates
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          socketRef.current.emit("webrtc-candidate", {
+            candidate: event.candidate,
+            targetSocketId,
+          });
+        }
+      };
+
+      // Store the connection
+      peerConnectionsRef.current.set(targetSocketId, pc);
+      console.log(`Created PC for ${targetSocketId}`);
+      return pc;
+    };
+
+    // --- Main Async Function to Start Call ---
+    const startCall = async () => {
       try {
-        socketRef.current = io(import.meta.env.VITE_VIDEO_CALL_BACKEND_URL);
-        
-
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true,
-        });
+        // 1. Get local media
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        if (!isMounted) return;
         localStreamRef.current = stream;
-        localVideoRef.current.srcObject = stream;
+        
+        // Add local stream to state
+        setStreams([{ id: "local", stream, isLocal: true }]);
 
-        pcRef.current = new RTCPeerConnection({
-          iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+        // 2. Connect to socket server
+        socketRef.current = io(SERVER_URL);
+        const socket = socketRef.current;
+
+        // 3. Set up all socket listeners
+        socket.on("connect", () => {
+          if (isMounted) setMySocketId(socket.id);
         });
 
-        stream.getTracks().forEach((track) => {
-          pcRef.current.addTrack(track, stream);
+        // Fired when we first join: gives us a list of *existing* users
+        socket.on("all-users", (allUserSocketIds) => {
+          console.log("Got all users:", allUserSocketIds);
+          allUserSocketIds.forEach((targetSocketId) => {
+            const pc = createPeerConnection(targetSocketId, true); // true = isOfferor
+            pc.createOffer()
+              .then((offer) => pc.setLocalDescription(offer))
+              .then(() => {
+                socket.emit("webrtc-offer", {
+                  offer: pc.localDescription,
+                  targetSocketId,
+                });
+              })
+              .catch((e) => console.error("Error creating offer:", e));
+          });
         });
 
-        pcRef.current.ontrack = (event) => {
-          remoteVideoRef.current.srcObject = event.streams[0];
-          setCallStatus("connected");
-        };
+        // Fired when we receive an offer from a *new* user
+        socket.on("webrtc-offer", async ({ offer, senderSocketId }) => {
+          console.log(`Receiving offer from ${senderSocketId}`);
+          const pc = createPeerConnection(senderSocketId, false); // false = isReceiver
+          await pc.setRemoteDescription(new RTCSessionDescription(offer));
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+          
+          socket.emit("webrtc-answer", {
+            answer: pc.localDescription,
+            targetSocketId: senderSocketId,
+          });
+        });
 
-        pcRef.current.onicecandidate = (event) => {
-          if (event.candidate) {
-            socketRef.current.emit("candidate", {
-              candidate: event.candidate,
-              roomId,
-            });
+        // Fired when we get an answer back from a user we sent an offer to
+        socket.on("webrtc-answer", async ({ answer, senderSocketId }) => {
+          console.log(`Receiving answer from ${senderSocketId}`);
+          const pc = peerConnectionsRef.current.get(senderSocketId);
+          if (pc) {
+            await pc.setRemoteDescription(new RTCSessionDescription(answer));
           }
-        };
-
-        socketRef.current.emit("join", roomId);
-
-        socketRef.current.on("offer", async (offer) => {
-          await pcRef.current.setRemoteDescription(offer);
-          const answer = await pcRef.current.createAnswer();
-          await pcRef.current.setLocalDescription(answer);
-          socketRef.current.emit("answer", { answer, roomId });
         });
 
-        socketRef.current.on("answer", async (answer) => {
-          await pcRef.current.setRemoteDescription(answer);
-        });
-
-        socketRef.current.on("candidate", async (candidate) => {
-          try {
-            await pcRef.current.addIceCandidate(new RTCIceCandidate(candidate));
-          } catch (e) {
-            console.error("Error adding ICE candidate:", e);
+        // Fired when we get an ICE candidate from any user
+        socket.on("webrtc-candidate", async ({ candidate, senderSocketId }) => {
+          const pc = peerConnectionsRef.current.get(senderSocketId);
+          if (pc) {
+            try {
+              await pc.addIceCandidate(new RTCIceCandidate(candidate));
+            } catch (e) {
+              console.error("Error adding ICE candidate:", e);
+            }
           }
         });
 
-        socketRef.current.on("offerNeeded", async () => {
-          const offer = await pcRef.current.createOffer();
-          await pcRef.current.setLocalDescription(offer);
-          socketRef.current.emit("offer", { offer, roomId });
+        // Fired when any user disconnects
+        socket.on("user-disconnected", (disconnectedSocketId) => {
+          console.log("User disconnected:", disconnectedSocketId);
+          closePeerConnection(disconnectedSocketId);
+          if (isMounted) {
+            setStreams((prev) => prev.filter((s) => s.id !== disconnectedSocketId));
+          }
         });
+
+        // 4. Join the room
+        socket.emit("join-room", roomId);
+
       } catch (error) {
-        console.error("Error initializing connection:", error);
-        setCallStatus("ended");
+        console.error("Error starting call:", error);
+        handleEndCall(); // Cleanup on failure
       }
     };
 
-    initializeConnection();
+    startCall();
 
+    // --- Effect Cleanup ---
     return () => {
-      if (pcRef.current) pcRef.current.close();
-      if (socketRef.current) socketRef.current.disconnect();
-      if (localStreamRef.current) {
-        localStreamRef.current.getTracks().forEach((track) => track.stop());
-      }
+      isMounted = false;
+      handleEndCall();
     };
-  }, [roomId]);
+  }, [inCall, roomId, handleEndCall, closePeerConnection]);
+
+  // --- Button Click Handlers ---
+  const handleJoin = () => {
+    if (roomId.trim()) {
+      setInCall(true);
+    }
+  };
 
   const toggleMute = () => {
-    const audioTracks = localVideoRef.current.srcObject.getAudioTracks();
-    audioTracks.forEach((track) => (track.enabled = !track.enabled));
-    setMuted(!muted);
+    if (!localStreamRef.current) return;
+    const enabled = !isMuted;
+    localStreamRef.current.getAudioTracks().forEach((track) => {
+      track.enabled = enabled;
+    });
+    setIsMuted(!enabled);
   };
 
   const toggleVideo = () => {
-    const videoTracks = localVideoRef.current.srcObject.getVideoTracks();
-    videoTracks.forEach((track) => (track.enabled = !track.enabled));
-    setVideoOn(!videoOn);
+    if (!localStreamRef.current) return;
+    const enabled = !isVideoOn;
+    localStreamRef.current.getVideoTracks().forEach((track) => {
+      track.enabled = enabled;
+    });
+    setIsVideoOn(!enabled);
   };
 
-  const handleEndCall = () => {
-    if (pcRef.current) pcRef.current.close();
-    if (socketRef.current) socketRef.current.disconnect();
-    if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach((track) => track.stop());
-    }
-    setIsInComming(false);
-    setCallStatus("ended");
-    onClose();
-  };
-
-  const handleAcceptCall = () => {
-    setIsInComming(false);
-    setCallStatus("connected");
-  };
-
-  return (
-    <AnimatePresence>
-      <Ringtone isRing={isInComming}/>
-      {!isHidden && (
-        <motion.div
-          className="fixed top-4 right-4 w-80 bg-gray-800 rounded-xl shadow-2xl pointer-events-auto overflow-hidden"
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -50 }}
-          transition={{ duration: 0.3 }}
-        >
-         
-          <div className="p-4 bg-gray-900 flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <img
-                src={profilePic}
-                alt="Profile"
-                className="w-10 h-10 rounded-full object-cover"
-              />
-              <div>
-                <h3 className="text-white font-semibold">{userName}</h3>
-                <p className="text-gray-400 text-sm">
-                  {callStatus === "ringing" ? "Calling..." : 
-                   callStatus === "connected" ? "Connected" : 
-                   callStatus === "ended" ? "Call Ended" : "Connecting..."}
-                </p>
-              </div>
-            </div>
+  // --- Render ---
+  if (!inCall) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+        <div className="w-full max-w-sm rounded-xl bg-gray-800 p-6 shadow-lg">
+          <h1 className="mb-4 text-center text-2xl font-bold text-white">
+            Join Group Call
+          </h1>
+          <div className="space-y-4">
+            <input
+              id="room-id"
+              type="text"
+              value={roomId}
+              onChange={(e) => setRoomId(e.target.value)}
+              placeholder="Enter Room ID"
+              className="w-full rounded-lg border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
             <button
-              onClick={() => setIsHidden(true)}
-              className="text-gray-400 hover:text-white"
+              onClick={handleJoin}
+              className="w-full rounded-lg bg-green-500 px-4 py-2 font-semibold text-white transition-all duration-200 hover:bg-green-600"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
+              Join Room
             </button>
           </div>
+        </div>
+      </div>
+    );
+  }
 
-          <div className={`relative bg-black ` }>
-            <motion.video
-              ref={remoteVideoRef}
-              autoPlay
-              className="w-full h-48 object-cover"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            />
-            <motion.video
-              ref={localVideoRef}
-              autoPlay
-              muted
-              className="absolute bottom-2 right-2 w-24 h-16 bg-black rounded-lg shadow-lg"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-            />
-          </div>
+  return (
+    <div className="fixed inset-0 z-50 flex h-full w-full flex-col bg-gray-800 text-white">
+      {/* Header */}
+      <div className="flex-shrink-0 bg-gray-900 p-4 shadow-md">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">
+            Room: <span className="font-mono">{roomId}</span>
+          </h2>
+          <h2 className="hidden text-sm font-semibold capitalize sm:block">
+            My ID: <span className="font-mono">{mySocketId}</span>
+          </h2>
+        </div>
+      </div>
 
-          <div className="p-4 flex justify-between items-center bg-gray-900">
-            {callStatus === "ringing" ? (
-              <div className="flex space-x-2">
-                <button
-                  onClick={handleAcceptCall}
-                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
-                >
-                  Accept
-                </button>
-                <button
-                  onClick={handleEndCall}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                >
-                  Decline
-                </button>
-              </div>
-            ) : (
-              <div className="flex space-x-2">
-                <button
-                  onClick={toggleMute}
-                  className={`px-4 py-2 rounded-lg ${muted ? "bg-red-500" : "bg-green-500"} text-white hover:opacity-90 transition`}
-                >
-                  {muted ? "Unmute" : "Mute"}
-                </button>
-                <button
-                  onClick={toggleVideo}
-                  className={`px-4 py-2 rounded-lg ${videoOn ? "bg-green-500" : "bg-red-500"} text-white hover:opacity-90 transition`}
-                >
-                  {videoOn ? "Stop Video" : "Start Video"}
-                </button>
-                <button
-                  onClick={handleEndCall}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                >
-                  End Call
-                </button>
-              </div>
-            )}
-          </div>
-        </motion.div>
-      )}
-      
-      {isHidden && (
-        <motion.div
-          className="fixed top-4 right-4 bg-gray-800 rounded-full p-2 pointer-events-auto"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
+      {/* Video Grid */}
+      <div className="flex-1 overflow-y-auto p-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {streams.map(({ id, stream, isLocal }) => (
+            <VideoPlayer
+              key={id}
+              socketId={id}
+              stream={stream}
+              isLocal={isLocal}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="flex-shrink-0 justify-center space-x-3 bg-gray-900 p-4">
+        <button
+          onClick={toggleMute}
+          className={`rounded-lg px-4 py-2 font-semibold text-white transition-all duration-200 ${
+            isMuted ? "bg-red-500 hover:bg-red-600" : "bg-gray-600 hover:bg-gray-700"
+          }`}
         >
-          <button
-            onClick={() => setIsHidden(false)}
-            className="text-white flex items-center space-x-2"
-          >
-            <img src={profilePic} alt="Profile" className="w-8 h-8 rounded-full" />
-            <span>{userName}</span>
-          </button>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          {isMuted ? "Unmute" : "Mute"}
+        </button>
+        <button
+          onClick={toggleVideo}
+          className={`rounded-lg px-4 py-2 font-semibold text-white transition-all duration-200 ${
+            !isVideoOn ? "bg-red-500 hover:bg-red-600" : "bg-gray-600 hover:bg-gray-700"
+          }`}
+        >
+          {isVideoOn ? "Stop Video" : "Start Video"}
+        </button>
+        <button
+          onClick={handleEndCall}
+          className="rounded-lg bg-red-500 px-4 py-2 font-semibold text-white transition-all duration-200 hover:bg-red-600"
+        >
+          End Call
+        </button>
+      </div>
+    </div>
   );
 };
 
-export default VideoCall;
+export default GroupVideoCall;

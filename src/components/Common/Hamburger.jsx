@@ -9,9 +9,11 @@ function Hamburger() {
     const dispatch = useDispatch();
     const { layout } = useSelector((state) => state.Chat);
     const [isShow,setIsShow]=useState(false);
+   
     const handleLogout=()=>{
         removeToken();
-        window.location('/login');
+       window.location.href = '/login';
+
     }
     return (
         <div className="w-fit z-50 fixed  h-screen border-x-2 bg-gray-100 flex flex-col justify-evenly  py-4">
@@ -71,7 +73,7 @@ function Hamburger() {
                     </svg>
                 </a>
 
-                <button onClick={()=>handleLogout} title="Logout">
+                <button onClick={handleLogout} title="Logout">
                     <svg className="h-8 w-8 text-gray-700 hover:text-red-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z" />
                     </svg>
