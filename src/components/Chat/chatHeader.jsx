@@ -138,6 +138,7 @@ function ChatHeader({socket=null}) {
                 {
                     isVideoCall && conId && <VideoCall isInComming={isInComming} initialRoomId={conId} setIsInComming={setIsInComming} userName={User.userId} onClose={() => { if(socket){socket.emit('end-video-call',{roomId:conId,userName:User?.userId})} setIsVideoCall(false) }} isOpen={isVideoCall} roomId={conId}   />
                 }
+                <Ringtone isRing={isInComming}/>
 
                 <button
                     title="Voice Call"
