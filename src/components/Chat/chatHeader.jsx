@@ -17,10 +17,7 @@ function ChatHeader({socket=null}) {
     const [isInComming,setIsInComming]=useState(false);
 
     const [conId,setConId]=useState('');
-    if(!socket||!socket.connected)
-    {
-        return (<div className="h-20 w-full border-y-2 bg-white flex items-center justify-between px-4 shadow-sm"></div>);
-    }
+   
 
     useEffect(()=>{
         if(!socket)
@@ -88,6 +85,10 @@ function ChatHeader({socket=null}) {
 
     }, [Chat, ConversationId])
 
+     if(!socket||!socket.connected)
+    {
+        return (<div className="h-20 w-full border-y-2 bg-white flex items-center justify-between px-4 shadow-sm"></div>);
+    }
 
     return (
         <div className="h-fit w-full border-y-2 bg-white flex items-center justify-between px-4 shadow-sm">
