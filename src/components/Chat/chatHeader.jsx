@@ -26,12 +26,14 @@ function ChatHeader({socket=null}) {
         }
         socket.on('offer-video-call',({roomId,userName})=>{
            
+            console.log('offer-video-call received',roomId,userName);
            setIsInComming(true);
                setConId(roomId);
                setIsVideoCall(true);
         })
 
         socket.on('end-video-call',({roomId,userName})=>{
+            console.log('end-video-call received',roomId,userName);
             setIsVideoCall(false);
             setConId('');
             setIsInComming(false);
@@ -51,9 +53,15 @@ function ChatHeader({socket=null}) {
         {
         return;
         }
+        try{
         setConId(ConversationId);
         setIsVideoCall(true);
+        console.log('emitting offer-video-call',{roomId:ConversationId,userName:User.userId});
         socket.emit('offer-video-call',{roomId:ConversationId,userName:User.userId})
+        }
+        catch(err){
+            console.log(err,"Error in sending video call request");
+        }
 
     }
     
