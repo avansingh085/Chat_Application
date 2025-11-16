@@ -8,8 +8,8 @@ export default function Ringtone({ isRing, src = '/ring.mp3' }) {
     if (!audio) return;
 
     if (isRing) {
+      audio.muted = false;      // ensure unmuted if autoplay blocked
       audio.play().catch(() => {});
-      
     } else {
       audio.pause();
       audio.currentTime = 0;
