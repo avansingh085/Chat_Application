@@ -143,6 +143,7 @@ const GroupVideoCall = ({ initialRoomId, onClose }) => {
         // 2. Connect to socket server
         socketRef.current = io(SERVER_URL);
         const socket = socketRef.current;
+        console.log("Connecting to socket server...",socket);
 
         // 3. Set up all socket listeners
         socket.on("connect", () => {

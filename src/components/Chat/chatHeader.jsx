@@ -124,7 +124,7 @@ function ChatHeader({socket=null}) {
                     </svg>
                 </button>
                 {
-                    isVideoCall && conId && <VideoCall isInComming={isInComming} setIsInComming={setIsInComming} userName={User.userId} onClose={() => { if(socket){socket.emit('end-video-call',{roomId:conId,userName:User?.userId})} setIsVideoCall(false) }} isOpen={isVideoCall} roomId={conId}   />
+                    isVideoCall && conId && <VideoCall isInComming={isInComming} initialRoomId={ConversationId} setIsInComming={setIsInComming} userName={User.userId} onClose={() => { if(socket){socket.emit('end-video-call',{roomId:conId,userName:User?.userId})} setIsVideoCall(false) }} isOpen={isVideoCall} roomId={conId}   />
                 }
 
                 <button
