@@ -17,7 +17,7 @@ const VideoPlayer = React.memo(({ stream, isLocal, socketId }) => {
   const label = isLocal ? `You (${socketId || 'local'})` : `User (${socketId})`;
 
   return (
-    <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black shadow-lg">
+    <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-white shadow-lg">
       <video
         ref={videoRef}
         autoPlay
