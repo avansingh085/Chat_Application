@@ -4,12 +4,14 @@ import { useSelector, useDispatch } from "react-redux";
 import apiClient from "../../utils/apiClient";
 import { setChat } from "../../Redux/userSlice";
 import axios from "axios";
+import Ringtone from "../RingTon";
 
 function ChatSend({ socket }) {
     // console.log(socket, "connection")
     const [message, setMessage] = useState("");
     const [uploadImageUrl, setUploadImageUrl] = useState(null);
     const { User, Chat, ConversationId } = useSelector((state) => state.Chat);
+    const [messageRing,setMessageRing]=useState(false);
     const dispatch = useDispatch();
 
     const [error, setError] = useState(null);
@@ -62,7 +64,7 @@ function ChatSend({ socket }) {
         const handleMessage = (mes) => {
             console.log("New message received:", mes);
             const updatedChat = [...(Chat[mes.conversationId]?.Message || []), mes];
-
+             
             dispatch(
                 setChat({
                     ...Chat,
@@ -72,6 +74,8 @@ function ChatSend({ socket }) {
                     },
                 })
             );
+            setMessageRing(true);
+            setTimeout(() => setMessageRing(false), 3000);
         };
 
         const handleConnectError = (err) => {
@@ -149,6 +153,7 @@ function ChatSend({ socket }) {
                     />
                 </div>
             )}
+            {messageRing&&<Ringtone isRing={messageRing} src="/message.mp3" />}
             <label className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                 <svg
                     className="h-8 w-8 text-gray-600"
