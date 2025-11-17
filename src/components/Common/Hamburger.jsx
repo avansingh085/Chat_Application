@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import UserProfile from '../User/userProfile';
 import { useSelector, useDispatch } from 'react-redux';
 import { setLayout } from '../../Redux/userSlice';
@@ -7,19 +7,36 @@ function Hamburger() {
     const [isOpenProfile, setOpenProfile] = useState(false);
     const { User } = useSelector((state) => state.Chat);
     const dispatch = useDispatch();
-    const { layout } = useSelector((state) => state.Chat);
-    const [isShow,setIsShow]=useState(false);
-   
-    const handleLogout=()=>{
+    const { layout, Notifications = {} } = useSelector((state) => state.Chat);
+    const [isShow, setIsShow] = useState(false);
+
+    const handleLogout = () => {
         removeToken();
-       window.location.href = '/login';
+        window.location.href = '/login';
 
     }
+
+    useEffect(() => {
+        let count = 0;
+        if (Object.keys(Notifications).length > 0) {
+            for (let key in Notifications)
+                if (Notifications[key].count > 0) {
+                    count += Notifications[key].count;
+                }
+            document.title = `(${count}) New Messages - ChatsApp`;
+
+        }
+        else {
+            document.title = `ChatsApp`;
+        }
+    }, [Notifications])
+
+
     return (
         <div className="w-fit z-50 fixed  h-screen border-x-2 bg-gray-100 flex flex-col justify-evenly  py-4">
 
-          
-           { isShow&&(<><div className="grid gap-6 w-16 items-center justify-center">
+
+            {isShow && (<><div className="grid gap-6 w-16 items-center justify-center">
                 <a href="#home" title="Home">
                     <svg className="h-8 w-8 text-gray-700 hover:text-blue-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
@@ -44,43 +61,43 @@ function Hamburger() {
                     </svg>
                 </button>
             </div>
-            <div className='text-xl font-bold px-4 fixed  text-center  bg-white  text-black h-7 w-16' onClick={()=>setIsShow(!isShow)}>
+                <div className='text-xl font-bold px-4 fixed  text-center  bg-white  text-black h-7 w-16' onClick={() => setIsShow(!isShow)}>
                     {'<'}
                 </div>
-            <div className="grid gap-6 w-16 items-center justify-center">
-                <button title="Profile" onClick={() => setOpenProfile(prev => !prev)}>
-                    <img
-                        className="h-12 w-12 rounded-full border-2 border-gray-300 hover:border-blue-500"
-                        src={User?.profilePicture||'/profile.jpeg'}
-                        onError={(e)=>{
-                            e.target.src='/profile.jpeg';
-                            e.target.error=null;
-                        }}
-                        alt="User Profile"
-                    />
+                <div className="grid gap-6 w-16 items-center justify-center">
+                    <button title="Profile" onClick={() => setOpenProfile(prev => !prev)}>
+                        <img
+                            className="h-12 w-12 rounded-full border-2 border-gray-300 hover:border-blue-500"
+                            src={User?.profilePicture || '/profile.jpeg'}
+                            onError={(e) => {
+                                e.target.src = '/profile.jpeg';
+                                e.target.error = null;
+                            }}
+                            alt="User Profile"
+                        />
 
-                </button>
-                {isOpenProfile && <UserProfile isOpen={isOpenProfile} onClose={() => setOpenProfile(false)} />}
-                <a href="#friends" title="Friends">
-                    <svg className="h-8 w-8 text-gray-700 hover:text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M13 12c0-1.1.9-2 2-2s2 .9 2 2-1.9 4-4 4-4-2.9-4-4 1.9-2 4-2m0-2c-2.2 0-4 1.8-4 4s1.8 6 4 6 6-3.8 6-6-1.8-4-4-4zm-7 2c0-1.1.9-2 2-2s2 .9 2 2-1.9 4-4 4-4-2.9-4-4 1.9-2 4-2m0-2c-2.2 0-4 1.8-4 4s1.8 6 4 6 6-3.8 6-6-1.8-4-4-4z" />
-                    </svg>
-                </a>
+                    </button>
+                    {isOpenProfile && <UserProfile isOpen={isOpenProfile} onClose={() => setOpenProfile(false)} />}
+                    <a href="#friends" title="Friends">
+                        <svg className="h-8 w-8 text-gray-700 hover:text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M13 12c0-1.1.9-2 2-2s2 .9 2 2-1.9 4-4 4-4-2.9-4-4 1.9-2 4-2m0-2c-2.2 0-4 1.8-4 4s1.8 6 4 6 6-3.8 6-6-1.8-4-4-4zm-7 2c0-1.1.9-2 2-2s2 .9 2 2-1.9 4-4 4-4-2.9-4-4 1.9-2 4-2m0-2c-2.2 0-4 1.8-4 4s1.8 6 4 6 6-3.8 6-6-1.8-4-4-4z" />
+                        </svg>
+                    </a>
 
-                <a href="#settings" title="Settings">
-                    <svg className="h-8 w-8 text-gray-700 hover:text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.43-.48-.43h-3.84c-.24 0-.43.19-.47.43l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.07-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.3-.06.62-.06.94 0 .32.02.64.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.04.24.24.43.48.43h3.84c.24 0 .43-.19.47-.43l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.07.47 0 .59-.22l1.92-3.32c.12-.22.08-.47-.12-.61l-2.03-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
-                    </svg>
-                </a>
+                    <a href="#settings" title="Settings">
+                        <svg className="h-8 w-8 text-gray-700 hover:text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.43-.48-.43h-3.84c-.24 0-.43.19-.47.43l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.07-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.3-.06.62-.06.94 0 .32.02.64.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.04.24.24.43.48.43h3.84c.24 0 .43-.19.47-.43l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.07.47 0 .59-.22l1.92-3.32c.12-.22.08-.47-.12-.61l-2.03-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
+                        </svg>
+                    </a>
 
-                <button onClick={handleLogout} title="Logout">
-                    <svg className="h-8 w-8 text-gray-700 hover:text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z" />
-                    </svg>
-                </button>
-            </div></>)}
+                    <button onClick={handleLogout} title="Logout">
+                        <svg className="h-8 w-8 text-gray-700 hover:text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z" />
+                        </svg>
+                    </button>
+                </div></>)}
             {
-                !isShow&&(<div className='text-xl font-bold  px-4 fixed  text-center rounded-full   text-black h-7 w-10' onClick={()=>setIsShow(!isShow)}>
+                !isShow && (<div className='text-xl font-bold  px-4 fixed  text-center rounded-full   text-black h-7 w-10' onClick={() => setIsShow(!isShow)}>
                     {'>'}
                 </div>)
             }
