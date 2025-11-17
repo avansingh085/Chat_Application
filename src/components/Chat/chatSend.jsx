@@ -5,18 +5,19 @@ import apiClient from "../../utils/apiClient";
 import { setChat } from "../../Redux/userSlice";
 import axios from "axios";
 import Ringtone from "../RingTon";
+import { generateText } from "../../utils/gemini.js";
 
 function ChatSend({ socket }) {
     // console.log(socket, "connection")
     const [message, setMessage] = useState("");
     const [uploadImageUrl, setUploadImageUrl] = useState(null);
     const { User, Chat, ConversationId } = useSelector((state) => state.Chat);
-    const [messageRing,setMessageRing]=useState(false);
+    const [messageRing, setMessageRing] = useState(false);
     const dispatch = useDispatch();
 
     const [error, setError] = useState(null);
     const textareaRef = useRef(null);
-   
+
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
 
@@ -40,23 +41,19 @@ function ChatSend({ socket }) {
     };
 
 
-   const handleCorrectMessage=async ()=>{
+    const handleCorrectMessage = async () => {
 
-      try{
-       const res=await axios.post(`${import.meta.env.VITE_GEMINI_BACKEND}/generate`,{
-            prompt:`->${message}<- inside arrow message  correct speling of message not give extra text only correct message make sure message meaning full `
-            ,
-            type:false
-        })
-       console.log(res);
-        setMessage(res.data.text);
+        try {
+            const res = await generateText(`->${message}<- inside arrow message  correct speling of message not give extra text only correct message make sure message meaning full `)
 
-      }
-      catch(err){
-        console.log(err)
+            setMessage(res);
 
-      }
-   }
+        }
+        catch (err) {
+            console.log(err)
+
+        }
+    }
 
     useEffect(() => {
         if (!socket) return;
@@ -64,7 +61,7 @@ function ChatSend({ socket }) {
         const handleMessage = (mes) => {
             console.log("New message received:", mes);
             const updatedChat = [...(Chat[mes.conversationId]?.Message || []), mes];
-             
+
             dispatch(
                 setChat({
                     ...Chat,
@@ -103,7 +100,7 @@ function ChatSend({ socket }) {
     const sendMessage = async () => {
         console.log(socket, ConversationId, message, uploadImageUrl)
         if (!socket || !ConversationId || !(message.trim() || uploadImageUrl)) return;
-     
+
         const newMessage = {
             sender: User.userId,
             message: message.trim(),
@@ -112,17 +109,35 @@ function ChatSend({ socket }) {
             timestamp: new Date().toISOString(),
             imageUrl: uploadImageUrl,
         };
-        
-        try {
-        //    const messageIsExiplicit=await axios.post(`${import.meta.env.VITE_GEMINI_BACKEND}/generate`,{
-        //         prompt:`->${message}<-   inside arrow message explisit harmfull content or sexual content then give output one other wise 0 no extra text output`  ,
-        //         type:true
-        //     })
 
-            
+        try {
+            const prompt = `
+You are a strict content safety classifier.
+
+Given the message between <input></input>, check if it contains ANY of the following:
+- sexual content
+- nudity or pornography
+- explicit or adult content
+- abusive, threatening, or harmful language
+- self-harm or violence
+- harassment or hate speech
+- dangerous or illegal activity
+- NSFW content
+- suspicious links or harmful URLs (malware, phishing, porn, scams)
+
+If the message contains ANY of these → output exactly "1".
+If the message is safe → output exactly "0".
+
+<input>${message}</input>
+`;
+
+            const messageIsExplicit = await generateText(prompt);
+
+
+            console.log(messageIsExplicit, "message information check")
             // console.log(messageIsExiplicit,"message information check")
-            // if(messageIsExiplicit?.data?.data)
-            // newMessage['isExplicit']=true;
+            if (parseInt(messageIsExplicit))
+                newMessage['isExplicit'] = true;
             socket.emit("message", newMessage);
             const updatedChat = [...(Chat[ConversationId]?.Message || []), newMessage];
             dispatch(
@@ -153,7 +168,7 @@ function ChatSend({ socket }) {
                     />
                 </div>
             )}
-            {messageRing&&<Ringtone isRing={messageRing} src="/message.mp3" isLoop={false} />}
+            {messageRing && <Ringtone isRing={messageRing} src="/message.mp3" isLoop={false} />}
             <label className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                 <svg
                     className="h-8 w-8 text-gray-600"
@@ -187,7 +202,7 @@ function ChatSend({ socket }) {
                     }
                 }}
             />
-           <button className="  bg-blue-500 h-9 w-9 text-white rounded-full" onClick={handleCorrectMessage}>AI</button>
+            <button className="  bg-blue-500 h-9 w-9 text-white rounded-full" onClick={handleCorrectMessage}>AI</button>
             <button
                 onClick={sendMessage}
                 disabled={

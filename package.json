@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/genai": "^1.29.1",
+    "@google/generative-ai": "^0.24.1",
     "@reduxjs/toolkit": "^2.5.0",
     "axios": "^1.8.4",
     "chartjs-adapter-date-fns": "^3.0.0",
