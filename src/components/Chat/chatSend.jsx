@@ -75,7 +75,7 @@ function ChatSend({ socket }) {
                 })
             );
             setMessageRing(true);
-            setTimeout(() => setMessageRing(false), 200);
+            setTimeout(() => setMessageRing(false), 2000);
         };
 
         const handleConnectError = (err) => {
@@ -153,7 +153,7 @@ function ChatSend({ socket }) {
                     />
                 </div>
             )}
-            {messageRing&&<Ringtone isRing={messageRing} src="/message.mp3" isLoop={false}/>}
+            {messageRing&&<Ringtone isRing={messageRing} src="/message.mp3" isLoop={false} />}
             <label className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                 <svg
                     className="h-8 w-8 text-gray-600"
