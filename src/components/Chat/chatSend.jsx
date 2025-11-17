@@ -42,18 +42,21 @@ function ChatSend({ socket }) {
 
 
     const handleCorrectMessage = async () => {
+  try {
+    const res = await generateText(`
+      Correct the spelling and grammar of the text inside the arrows.
+      Do not add extra words or explanations.
+      Return only the corrected message.
 
-        try {
-            const res = await generateText(`->${message}<- inside arrow message  correct speling of message not give extra text only correct message make sure message meaning full `)
+      Text: ->${message}<-
+    `);
 
-            setMessage(res);
+    setMessage(res);
+  } catch (err) {
+    console.log(err);
+  }
+};
 
-        }
-        catch (err) {
-            console.log(err)
-
-        }
-    }
 
     useEffect(() => {
         if (!socket) return;
