@@ -8,7 +8,7 @@ import Ringtone from "../RingTon";
 import { generateText } from "../../utils/gemini.js";
 
 function ChatSend({ socket }) {
-    // console.log(socket, "connection")
+  
     const [message, setMessage] = useState("");
     const [uploadImageUrl, setUploadImageUrl] = useState(null);
     const { User, Chat, ConversationId } = useSelector((state) => state.Chat);

@@ -22,7 +22,7 @@ const VideoPlayer = React.memo(({ stream, isLocal, socketId }) => {
         ref={videoRef}
         autoPlay
         playsInline
-        muted={isLocal} // Mute local video to prevent feedback
+        muted={isLocal} 
         className="h-full w-full object-cover"
       />
       <div className="absolute bottom-0 left-0 rounded-tr-lg bg-white/50 px-2 py-1 text-xs font-medium text-white">
@@ -33,7 +33,7 @@ const VideoPlayer = React.memo(({ stream, isLocal, socketId }) => {
 });
 
 const GroupVideoCall = ({ initialRoomId,setIsInComming, onClose }) => {
-  // --- State ---
+  
   const [roomId, setRoomId] = useState(initialRoomId || "");
   const [inCall, setInCall] = useState(false);
   const [mySocketId, setMySocketId] = useState("");
@@ -46,7 +46,7 @@ const GroupVideoCall = ({ initialRoomId,setIsInComming, onClose }) => {
   
   const peerConnectionsRef = useRef(new Map());
 
-  // --- Helper: Close a single peer connection ---
+  
   const closePeerConnection = useCallback((socketId) => {
     const pc = peerConnectionsRef.current.get(socketId);
     if (pc) {
@@ -55,28 +55,28 @@ const GroupVideoCall = ({ initialRoomId,setIsInComming, onClose }) => {
     }
   }, []);
 
-  // --- Main Hang-up/Cleanup Function ---
+  
   const handleEndCall = useCallback(() => {
     console.log("Ending call...");
     
-    // 1. Close all peer connections
+  
     peerConnectionsRef.current.forEach((pc) => pc.close());
     peerConnectionsRef.current.clear();
 
-    // 2. Stop local media tracks
+  
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach((track) => track.stop());
       localStreamRef.current = null;
     }
 
-    // 3. Disconnect from socket
+    
     if (socketRef.current) {
-      socketRef.current.emit("hang-up"); // Tell server we are leaving
+      socketRef.current.emit("hang-up"); 
       socketRef.current.disconnect();
       socketRef.current = null;
     }
 
-    // 4. Reset state
+    
     setStreams([]);
     setInCall(false);
     setMySocketId("");
@@ -86,34 +86,31 @@ const GroupVideoCall = ({ initialRoomId,setIsInComming, onClose }) => {
     if (onClose) onClose();
   }, [onClose]);
 
-  // --- Main Call Logic ---
+  
   useEffect(() => {
-    // This effect runs when `inCall` becomes true
+    
     if (!inCall || !roomId) return;
 
-    let isMounted = true; // Flag to prevent state updates on unmounted component
+    let isMounted = true; 
 
-    // Helper to create a new Peer Connection
     const createPeerConnection = (targetSocketId, isOfferor) => {
       const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
-      
-      // Add local tracks to the connection
+     
       localStreamRef.current.getTracks().forEach((track) => {
         pc.addTrack(track, localStreamRef.current);
       });
 
-      // Handle incoming tracks from the remote peer
       pc.ontrack = (event) => {
         if (!isMounted) return;
         console.log(`Received track from ${targetSocketId}`);
-        // Add the remote stream to our state
+       
         setStreams((prev) => [
           ...prev.filter((s) => s.id !== targetSocketId),
           { id: targetSocketId, stream: event.streams[0], isLocal: false },
         ]);
       };
 
-      // Handle ICE candidates
+    
       pc.onicecandidate = (event) => {
         if (event.candidate) {
           socketRef.current.emit("webrtc-candidate", {
@@ -123,38 +120,34 @@ const GroupVideoCall = ({ initialRoomId,setIsInComming, onClose }) => {
         }
       };
 
-      // Store the connection
       peerConnectionsRef.current.set(targetSocketId, pc);
       console.log(`Created PC for ${targetSocketId}`);
       return pc;
     };
 
-    // --- Main Async Function to Start Call ---
+ 
     const startCall = async () => {
       try {
-        // 1. Get local media
+       
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         if (!isMounted) return;
         localStreamRef.current = stream;
-        
-        // Add local stream to state
+  
         setStreams([{ id: "local", stream, isLocal: true }]);
 
-        // 2. Connect to socket server
         socketRef.current = io(SERVER_URL);
         const socket = socketRef.current;
         console.log("Connecting to socket server...",socket);
 
-        // 3. Set up all socket listeners
         socket.on("connect", () => {
           if (isMounted) setMySocketId(socket.id);
         });
 
-        // Fired when we first join: gives us a list of *existing* users
+      
         socket.on("all-users", (allUserSocketIds) => {
           console.log("Got all users:", allUserSocketIds);
           allUserSocketIds.forEach((targetSocketId) => {
-            const pc = createPeerConnection(targetSocketId, true); // true = isOfferor
+            const pc = createPeerConnection(targetSocketId, true); 
             pc.createOffer()
               .then((offer) => pc.setLocalDescription(offer))
               .then(() => {
@@ -167,10 +160,9 @@ const GroupVideoCall = ({ initialRoomId,setIsInComming, onClose }) => {
           });
         });
 
-        // Fired when we receive an offer from a *new* user
         socket.on("webrtc-offer", async ({ offer, senderSocketId }) => {
           console.log(`Receiving offer from ${senderSocketId}`);
-          const pc = createPeerConnection(senderSocketId, false); // false = isReceiver
+          const pc = createPeerConnection(senderSocketId, false); 
           await pc.setRemoteDescription(new RTCSessionDescription(offer));
           const answer = await pc.createAnswer();
           await pc.setLocalDescription(answer);
@@ -181,7 +173,6 @@ const GroupVideoCall = ({ initialRoomId,setIsInComming, onClose }) => {
           });
         });
 
-        // Fired when we get an answer back from a user we sent an offer to
         socket.on("webrtc-answer", async ({ answer, senderSocketId }) => {
           console.log(`Receiving answer from ${senderSocketId}`);
           const pc = peerConnectionsRef.current.get(senderSocketId);
@@ -190,7 +181,6 @@ const GroupVideoCall = ({ initialRoomId,setIsInComming, onClose }) => {
           }
         });
 
-        // Fired when we get an ICE candidate from any user
         socket.on("webrtc-candidate", async ({ candidate, senderSocketId }) => {
           const pc = peerConnectionsRef.current.get(senderSocketId);
           if (pc) {
@@ -202,7 +192,6 @@ const GroupVideoCall = ({ initialRoomId,setIsInComming, onClose }) => {
           }
         });
 
-        // Fired when any user disconnects
         socket.on("user-disconnected", (disconnectedSocketId) => {
           console.log("User disconnected:", disconnectedSocketId);
           closePeerConnection(disconnectedSocketId);
@@ -211,25 +200,22 @@ const GroupVideoCall = ({ initialRoomId,setIsInComming, onClose }) => {
           }
         });
 
-        // 4. Join the room
         socket.emit("join-room", roomId);
 
       } catch (error) {
         console.error("Error starting call:", error);
-        handleEndCall(); // Cleanup on failure
+        handleEndCall(); 
       }
     };
 
     startCall();
 
-    // --- Effect Cleanup ---
     return () => {
       isMounted = false;
       handleEndCall();
     };
   }, [inCall, roomId, handleEndCall, closePeerConnection]);
 
-  // --- Button Click Handlers ---
   const handleJoin = () => {
     if (roomId.trim()) {
       setIsInComming(false);
@@ -255,7 +241,6 @@ const GroupVideoCall = ({ initialRoomId,setIsInComming, onClose }) => {
     setIsVideoOn(!enabled);
   };
 
-  // --- Render ---
   if (!inCall) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/70 ">
@@ -286,7 +271,7 @@ const GroupVideoCall = ({ initialRoomId,setIsInComming, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex h-full w-full flex-col bg-gray-800 text-white">
-      {/* Header */}
+    
       <div className="flex-shrink-0 bg-gray-900 p-4 shadow-md">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">
@@ -298,7 +283,6 @@ const GroupVideoCall = ({ initialRoomId,setIsInComming, onClose }) => {
         </div>
       </div>
 
-      {/* Video Grid */}
       <div className="flex-1 overflow-y-auto p-4">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {streams.map(({ id, stream, isLocal }) => (
@@ -312,7 +296,6 @@ const GroupVideoCall = ({ initialRoomId,setIsInComming, onClose }) => {
         </div>
       </div>
 
-      {/* Controls */}
       <div className="flex-shrink-0 justify-center space-x-3 bg-gray-900 p-4">
         <button
           onClick={toggleMute}

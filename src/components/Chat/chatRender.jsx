@@ -19,11 +19,11 @@ function ChatRender() {
     e.preventDefault();
     try {
       let joinLink = e.currentTarget.value;
-      //  console.log("Join link clicked:", joinLink);
+     
       joinLink = joinLink.replace("http://localhost:3001", import.meta.env.VITE_BACKEND_URL);
-      //console.log(joinLink,">>>>>>>>>>>>>>>>>>>>>>>>")
+      
       let result = await apiClient.post(joinLink, { id: User.userId });
-      //console.log("Join link result:", result.data);
+     
       window.location = '/chat'
       if (result.data.success) {
         console.log("Join link result:", result.data);

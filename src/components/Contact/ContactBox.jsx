@@ -9,7 +9,6 @@ function ContactBox({ data: ConversationId, socket, search }) {
     const [NotificationKey, setNotificationKey] = useState("");
     const dispatch = useDispatch();
 
-    // console.log(NotificationKey,"NOTIFICATIONKEY",Notifications[NotificationKey])
     const handleConversationId = () => {
         dispatch(setConversationId(ConversationId));
         if (layout === "contacts")
