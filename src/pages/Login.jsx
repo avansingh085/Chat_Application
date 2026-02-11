@@ -37,7 +37,7 @@ const AuthForm = () => {
   }, [navigate, dispatch]);
 
   useEffect(() => {
-    // Calculate password strength
+    
     if (userData.password) {
       let strength = 0;
       if (userData.password.length > 5) strength += 1;

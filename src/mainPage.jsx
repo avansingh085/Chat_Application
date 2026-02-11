@@ -9,11 +9,12 @@ import Login from "./pages/Login";
 import ProtectedRoute from "./components/Common/ProtectRoute";
 import PublicRoute from "./components/Common/PublicRoute";
 import NotFoundPage from "./pages/PageNotFound";
+import ForgotPasswordFlow from "./pages/ForgotPassword";
 
 function Main({ socket }) {
     const dispatch = useDispatch();
     const { layout } = useSelector((state) => state.Chat);
-    // screen size change
+  
     const handleResize = () => {
         if (window.innerWidth < 768) {
             if (layout === "both")
@@ -24,7 +25,7 @@ function Main({ socket }) {
     };
 
     useEffect(() => {
-        handleResize(); // Initial check
+        handleResize(); 
         window.addEventListener("resize", handleResize);
         return () => {
             window.removeEventListener("resize", handleResize);
@@ -38,6 +39,11 @@ function Main({ socket }) {
                 <Route path="/Login" element={
                      <PublicRoute>
                         <Login />
+                     </PublicRoute>
+                } />
+                <Route path="/forgot-password" element={
+                     <PublicRoute>
+                      <div className="h-screen bg-gray-100  w-screen grid items-center justify-center"> <ForgotPasswordFlow/></div>
                      </PublicRoute>
                 } />
                 <Route path="/" element={

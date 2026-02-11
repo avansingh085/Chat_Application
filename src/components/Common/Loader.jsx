@@ -2,7 +2,7 @@ import React from 'react';
 
 const PuffLoader = ({
   size = 60,
-  color = "#3b82f6", // Defaulting to Modern Electric Blue
+  color = "#3b82f6", 
   loading = true,
   speedMultiplier = 1,
 }) => {
@@ -25,23 +25,23 @@ const PuffLoader = ({
         `}
       </style>
 
-      {/* Ring 1 */}
+     
       <div
         className="absolute inset-0 rounded-full border-2 border-solid opacity-0"
         style={{
           borderColor: color,
-          boxShadow: `0 0 10px ${color}40`, // Subtle modern glow
+          boxShadow: `0 0 10px ${color}40`, 
           animation: `puff ${duration}s cubic-bezier(0.165, 0.84, 0.44, 1) infinite`,
           animationDelay: '0s',
         }}
       />
 
-      {/* Ring 2 */}
+    
       <div
         className="absolute inset-0 rounded-full border-2 border-solid opacity-0"
         style={{
           borderColor: color,
-          boxShadow: `0 0 10px ${color}40`, // Subtle modern glow
+          boxShadow: `0 0 10px ${color}40`, 
           animation: `puff ${duration}s cubic-bezier(0.165, 0.84, 0.44, 1) infinite`,
           animationDelay: `-${duration / 2}s`,
         }}
