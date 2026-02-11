@@ -21,7 +21,7 @@ function ChatHeader({ socket = null }) {
 
     useEffect(() => {
         if (!socket) {
-        throw new Error("socket not connected!")
+        // throw new Error("socket not connected!")
         return ;
         }
         socket.on('offer-video-call', ({ roomId, userName }) => {
