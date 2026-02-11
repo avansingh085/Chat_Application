@@ -4,11 +4,11 @@ import { useSelector, useDispatch } from "react-redux";
 import apiClient from "../../utils/apiClient";
 import { setChat } from "../../Redux/userSlice";
 import axios from "axios";
-import Ringtone from "../RingTon";
+import Ringtone from "../Call/RingTon.jsx";
 import { generateText } from "../../utils/gemini.js";
 
 function ChatSend({ socket }) {
-  
+
     const [message, setMessage] = useState("");
     const [uploadImageUrl, setUploadImageUrl] = useState(null);
     const { User, Chat, ConversationId } = useSelector((state) => state.Chat);
@@ -42,8 +42,8 @@ function ChatSend({ socket }) {
 
 
     const handleCorrectMessage = async () => {
-  try {
-    const res = await generateText(`
+        try {
+            const res = await generateText(`
       Correct the spelling and grammar of the text inside the arrows.
       Do not add extra words or explanations.
       Return only the corrected message.
@@ -51,11 +51,11 @@ function ChatSend({ socket }) {
       Text: ->${message}<-
     `);
 
-    setMessage(res);
-  } catch (err) {
-    console.log(err);
-  }
-};
+            setMessage(res);
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
 
     useEffect(() => {

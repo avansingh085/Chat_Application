@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Profile from '../User/Profile';
-import VideoCall from '../VideoCall';
+import VideoCall from '../Call/VideoCall';
 import { Error, Success } from '../Common/toast';
-import Ringtone from '../RingTon';
-function ChatHeader({socket=null}) {
+import Ringtone from '../Call/RingTon';
+function ChatHeader({ socket = null }) {
 
     const { ConversationId, Chat, ContactData, User } = useSelector((state) => state.Chat);
 
@@ -14,31 +14,30 @@ function ChatHeader({socket=null}) {
 
     const [isVideoCall, setIsVideoCall] = useState(false);
 
-    const [isInComming,setIsInComming]=useState(false);
+    const [isInComming, setIsInComming] = useState(false);
 
-    const [conId,setConId]=useState('');
-   
+    const [conId, setConId] = useState('');
 
-    useEffect(()=>{
-        if(!socket)
-        {
-           // Error('Socket not connected!')
-            return;
+
+    useEffect(() => {
+        if (!socket) {
+        throw new Error("socket not connected!")
+        return ;
         }
-        socket.on('offer-video-call',({roomId,userName})=>{
-           
-            console.log('offer-video-call received',roomId,userName);
-           setIsInComming(true);
-               setConId(roomId);
-               setIsVideoCall(true);
+        socket.on('offer-video-call', ({ roomId, userName }) => {
+
+            console.log('offer-video-call received', roomId, userName);
+            setIsInComming(true);
+            setConId(roomId);
+            setIsVideoCall(true);
         })
 
-        socket.on('end-video-call',({roomId,userName})=>{
-            console.log('end-video-call received',roomId,userName);
+        socket.on('end-video-call', ({ roomId, userName }) => {
+            console.log('end-video-call received', roomId, userName);
             setIsVideoCall(false);
             setConId('');
             setIsInComming(false);
-            
+
         })
 
         // return ()=>{
@@ -46,26 +45,25 @@ function ChatHeader({socket=null}) {
         //     socket.off('offer-video-call');
         // }
 
-    },[socket])
+    }, [socket])
 
 
-    function sendVideoCallRequest(){
-        if(!socket)
-        {
-        return;
+    function sendVideoCallRequest() {
+        if (!socket) {
+            return;
         }
-        try{
-        setConId(ConversationId);
-        setIsVideoCall(true);
-        console.log('emitting offer-video-call',{roomId:ConversationId,userName:User.userId});
-        socket.emit('offer-video-call',{roomId:ConversationId,userName:User.userId})
+        try {
+            setConId(ConversationId);
+            setIsVideoCall(true);
+            console.log('emitting offer-video-call', { roomId: ConversationId, userName: User.userId });
+            socket.emit('offer-video-call', { roomId: ConversationId, userName: User.userId })
         }
-        catch(err){
-            console.log(err,"Error in sending video call request");
+        catch (err) {
+            console.log(err, "Error in sending video call request");
         }
 
     }
-    
+
 
 
     useEffect(() => {
@@ -85,8 +83,7 @@ function ChatHeader({socket=null}) {
 
     }, [Chat, ConversationId])
 
-     if(!socket||!socket.connected)
-    {
+    if (!socket || !socket.connected) {
         return (<div className="h-20 w-full border-y-2 bg-white flex items-center justify-between px-4 shadow-sm"></div>);
     }
 
@@ -106,7 +103,7 @@ function ChatHeader({socket=null}) {
                     alt="User Avatar"
                     onClick={() => { setShowProfile(!showProfile) }}
                 />
-               
+
                 {
                     showProfile && <Profile onClose={() => { setShowProfile(false) }} isOpen={showProfile} isGroup={(Chat[ConversationId]?.Conversation?.type === "group")} profileUser={ContactData[contactUserId]} />
                 }
@@ -124,7 +121,7 @@ function ChatHeader({socket=null}) {
                 <button
                     title="Video Call"
                     className="p-2 rounded-full hover:bg-gray-200 transition-colors"
-                    onClick={() => { setIsVideoCall(!isVideoCall);sendVideoCallRequest(); }}
+                    onClick={() => { setIsVideoCall(!isVideoCall); sendVideoCallRequest(); }}
                 >
                     <svg
                         className="h-8 w-8 text-gray-600 hover:text-blue-500"
@@ -136,9 +133,9 @@ function ChatHeader({socket=null}) {
                     </svg>
                 </button>
                 {
-                    isVideoCall && conId && <VideoCall isInComming={isInComming} initialRoomId={conId} setIsInComming={setIsInComming} userName={User.userId} onClose={() => { if(socket){socket.emit('end-video-call',{roomId:conId,userName:User?.userId})} setIsVideoCall(false) }} isOpen={isVideoCall} roomId={conId}   />
+                    isVideoCall && conId && <VideoCall isInComming={isInComming} initialRoomId={conId} setIsInComming={setIsInComming} userName={User.userId} onClose={() => { if (socket) { socket.emit('end-video-call', { roomId: conId, userName: User?.userId }) } setIsVideoCall(false) }} isOpen={isVideoCall} roomId={conId} />
                 }
-                <Ringtone isRing={isInComming}/>
+                <Ringtone isRing={isInComming} />
 
                 <button
                     title="Voice Call"

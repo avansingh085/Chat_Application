@@ -14,7 +14,7 @@ function App() {
 
   const loading = useSelector((state) => state.Chat?.loading);
   const { User } = useSelector((state) => state.Chat);
-  // Fetch user on initial mount
+ 
   useEffect(() => {
     dispatch(fetchUser());
   }, [dispatch]);
@@ -42,7 +42,7 @@ function App() {
     };
   }, [User?.userId]);
 
-  if (loading) return <DotLoader />;
+  if (loading) return  <div className='h-screen w-screen grid items-center justify-center'><DotLoader  color="#06b6d4" size={80}/></div>;
 
   return (
     <main className="max-h-screen max-w-screen flex justify-center items-center flex-col">
