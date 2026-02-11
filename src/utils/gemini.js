@@ -10,26 +10,31 @@ const geminiConfig=async ()=>{
 }
 geminiConfig();
 export async function generateText(prompt) {
-  if(!ai)
-  {
-    console.log("failed to connect gemini");
-    return;
+  try {
+    if (!ai) {
+      console.log("Gemini not initialized");
+      return null;
+    }
+
+    if (!prompt || typeof prompt !== "string" || !prompt.trim()) {
+      console.log("Invalid prompt");
+      return null;
+    }
+
+    const model = ai.getGenerativeModel({
+      model: "gemini-2.5-flash",
+    });
+
+    const result = await model.generateContent(prompt);
+
+    const text = result.response.text();
+
+    console.log(text);
+    return text;
+
+  } catch (error) {
+    console.error("Gemini Error:", error);
+    return null;
   }
-  const model = ai.getGenerativeModel({
-    model: "gemini-2.5-flash",
-    apiVersion: "v1"
-  });
-
-  const result = await model.generateContent({contents: [
-      {
-        role: "user",
-        parts: [{ text: prompt }]
-      }
-    ]
-  });
-
-  console.log(result.response.text());
-  return result.response.text();
 }
 
-generateText();
