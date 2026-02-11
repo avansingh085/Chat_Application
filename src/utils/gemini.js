@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const ai = new GoogleGenerativeAI('AIzaSyByxbDgIHdcbQlnbLz498ZQoIRfEckZyok');
+const ai = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
 export async function generateText(prompt) {
   const model = ai.getGenerativeModel({
