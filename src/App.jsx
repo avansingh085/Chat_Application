@@ -23,10 +23,10 @@ function App() {
   useEffect(() => {
     if (!User?.userId || socket) return;
 
-    const socketInstance = io(import.meta.env.VITE_BACKEND_URL, {
-      transports: ['websocket'],
-      query: { userId: User.userId },
-    });
+   const socketInstance = io(import.meta.env.VITE_BACKEND_URL, {
+  query: { userId: User.userId },
+  withCredentials: true,
+});
 
     socketInstance.on('connect', () => {
       console.log('Connected to socket:', socketInstance.id);
