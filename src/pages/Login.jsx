@@ -22,20 +22,6 @@ const AuthForm = () => {
     confirmPassword: "",
   });
   const [passwordStrength, setPasswordStrength] = useState(0);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
-
-    if (token) {
-
-      const cleanUrl = window.location.origin + '/chat';
-      window.history.replaceState({}, document.title, cleanUrl);
-      dispatch(fetchUser());
-      navigate('/chat');
-    }
-  }, [navigate, dispatch]);
-
   useEffect(() => {
     if (userData.password) {
       let strength = 0;

@@ -10,7 +10,6 @@ export const fetchUser=createAsyncThunk('user/fetchuser',async (_,thunkAPI)=>{
             error.response?.data?.message || error.message || 'Failed to fetch user'
         )
     }
-
 })
 const initialState = {
 
