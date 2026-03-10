@@ -21,26 +21,24 @@ function App() {
   
 
   useEffect(() => {
-    if (!User?.userId || socket) return;
+  if (!User?.userId || socket) return;
 
-   const socketInstance = io(import.meta.env.VITE_BACKEND_URL, {
-  query: { userId: User.userId },
-  withCredentials: true,
-});
+  const socketInstance = io(import.meta.env.VITE_BACKEND_URL, {
+    query: { userId: User.userId },
+    withCredentials: true,
+    transports: ["websocket"]
+  });
 
-    socketInstance.on('connect', () => {
-      console.log('Connected to socket:', socketInstance.id);
-      setSocket(socketInstance);
-    });
+  socketInstance.on("connect", () => {
+    console.log("Connected:", socketInstance.id);
+    setSocket(socketInstance);
+  });
 
-    return () => {
-      socketInstance.off('connect');
-      socketInstance.off('message');
-      socketInstance.off('connect_error');
-      socketInstance.off('notification');
-      socketInstance.disconnect();
-    };
-  }, [User?.userId]);
+
+  return () => {
+    socketInstance.disconnect();
+  };
+}, [User?.userId]);
 
   if (loading) return  <div className='h-screen w-screen grid items-center justify-center'><DotLoader  color="#06b6d4" size={80}/></div>;
 
