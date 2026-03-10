@@ -85,8 +85,15 @@ const AuthForm = () => {
       const data = await apiPost(endpoint, payload);
       setSuccess(isLogin ? "Login successful!" : "Account created successfully!");
       await new Promise(resolve => setTimeout(resolve, 1000));
-      await dispatch(fetchUser());
+      if(!isLogin){
+        setSuccess("Login successful! Redirecting...");
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setFormType("login")
+      }
+      else
+      {
       navigate("/chat");
+      }
     } catch (err) {
       setError(err?.response?.data?.message || "Something went wrong. Please try again.");
     } finally {
