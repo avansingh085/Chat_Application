@@ -2,15 +2,6 @@ import axios from "axios";
   const BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/api`; 
 //  const BASE_URL = "http://localhost:3001/api";
 
-export const getToken = () => localStorage.getItem("ChatsToken");
-
-export const setToken = (token) => {
-    if (token) {
-        localStorage.setItem("ChatsToken", token);
-    } else {
-        localStorage.removeItem("ChatsToken");
-    }
-};
 const apiClient = axios.create({
     baseURL: BASE_URL,
     headers: {

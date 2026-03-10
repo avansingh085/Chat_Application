@@ -75,7 +75,8 @@ function ChatRender() {
               );
             })() : (
               (() => {
-                const joinLinkRegex = /http:\/\/localhost:3001\/api\/group\/[a-zA-Z0-9-]+\/[a-zA-Z0-9]+\/joinLink/g;
+                
+                const joinLinkRegex = /http:\/\/localhost:3001\/api\/group\/join\/[a-zA-Z0-9]+/g;
                 const genericLinkRegex = /(https?:\/\/[^\s]+)/g;
 
                 const parts = [];

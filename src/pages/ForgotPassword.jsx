@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Key, ArrowRight, CheckCircle, Loader2, ChevronLeft } from 'lucide-react';
 
-const mockApiService = {
+const ApiService = {
   sendOtp: (email) => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -57,7 +57,7 @@ const ForgotPasswordFlow = () => {
     setError('');
 
     try {
-      await mockApiService.sendOtp(email);
+      await ApiService.sendOtp(email);
       setStep(2);
     } catch (err) {
       setError(err.message);
@@ -72,7 +72,7 @@ const ForgotPasswordFlow = () => {
     setError('');
 
     try {
-      await mockApiService.verifyOtp(otp);
+      await ApiService.verifyOtp(otp);
       setStep(3);
     } catch (err) {
       setError(err.message);
@@ -96,7 +96,7 @@ const ForgotPasswordFlow = () => {
 
     setIsLoading(true);
     try {
-      await mockApiService.resetPassword(newPassword);
+      await ApiService.resetPassword(newPassword);
       setStep(4);
     } catch (err) {
       setError(err.message);

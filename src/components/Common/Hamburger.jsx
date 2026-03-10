@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import UserProfile from '../User/userProfile';
 import { useSelector, useDispatch } from 'react-redux';
 import { setLayout } from '../../Redux/userSlice';
-import { removeToken } from '../../utils/token';
+
 function Hamburger() {
     const [isOpenProfile, setOpenProfile] = useState(false);
     const { User } = useSelector((state) => state.Chat);

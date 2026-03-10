@@ -1,4 +1,3 @@
-// frontend/src/hooks/useEncryption.js
 import nacl from "tweetnacl";
 import * as util from "tweetnacl-util";
 
