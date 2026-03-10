@@ -8,15 +8,7 @@ const apiClient = axios.create({
         "Content-Type": "application/json",
     },
 });
-apiClient.interceptors.request.use(async (config) => {
-    const token = await getToken();
-    if (token) {
-        config.headers.Authorization = `${token}`;
-    }
-    return config;
-}, (error) => {
-    return Promise.reject(error);
-});
+
 
 export const apiGet = async (url, params = {}) => {
     try {

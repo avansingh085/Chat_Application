@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import Component from './mainPage.jsx';
 import { useSelector, useDispatch } from 'react-redux';
-import Login from './pages/Login.jsx';
+
 import io from 'socket.io-client';
 import { fetchUser } from './Redux/userSlice.jsx';
 import DotLoader from './components/Common/Loader.jsx';
