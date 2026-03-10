@@ -26,7 +26,6 @@ function App() {
   const socketInstance = io(import.meta.env.VITE_BACKEND_URL, {
     query: { userId: User.userId },
     withCredentials: true,
-    transports: ["websocket"]
   });
 
   socketInstance.on("connect", () => {
