@@ -29,8 +29,8 @@ export const connectToSocket = (userId) => (dispatch, getState) => {
   const SOCKET_URL =import.meta.env.VITE_BACKEND_URL;
 
   socket = io(SOCKET_URL, {
-    transports: ['websocket'],
     query: { userId },
+    withCredentials: true,
   });
 
   socket.on('connect', () => {
