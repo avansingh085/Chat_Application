@@ -134,13 +134,13 @@ If the message is safe → output exactly "0".
 <input>${message}</input>
 `;
 
-            const messageIsExplicit = await generateText(prompt);
+            // const messageIsExplicit = await generateText(prompt);
 
 
-            console.log(messageIsExplicit, "message information check")
-            // console.log(messageIsExiplicit,"message information check")
-            if (parseInt(messageIsExplicit))
-                newMessage['isExplicit'] = true;
+            // console.log(messageIsExplicit, "message information check")
+            // // console.log(messageIsExiplicit,"message information check")
+            // if (parseInt(messageIsExplicit))
+            //     newMessage['isExplicit'] = true;
             socket.emit("message", newMessage);
             const updatedChat = [...(Chat[ConversationId]?.Message || []), newMessage];
             dispatch(
